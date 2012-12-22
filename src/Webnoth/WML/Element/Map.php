@@ -45,7 +45,7 @@ class Map extends Element
     protected function setWidth($width)
     {
         if ($this->width != $width && $this->width !== null) {
-            throw new \RuntimeException('Width mismatch');
+            throw new \RuntimeException('Width mismatch: ' . $width . ' differs from current '. $this->width);
         }
         
         $this->width = (int)$width;
