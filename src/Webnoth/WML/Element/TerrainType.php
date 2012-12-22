@@ -9,5 +9,13 @@ use Webnoth\WML\Element;
  */
 class TerrainType extends Element
 {
-    
+    /**
+     * Returns the string attribute (used in map files)
+     * 
+     * @return string
+     */
+    public function getString()
+    {
+        return $this->offsetGet('string');
+    }
 }
