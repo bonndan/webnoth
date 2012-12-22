@@ -40,6 +40,16 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * Ensures the correct width is returned
+     */
+    public function testGetWidth()
+    {
+        $row = array('Gg', 'Gg');
+        $this->map->addRawTileRow($row);
+        $this->assertEquals(2, $this->map->getWidth());
+    }
+    
+    /**
      * ensures all added tiles are stored
      */
     public function testAddRawTileRowTwice()

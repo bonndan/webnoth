@@ -60,4 +60,14 @@ class Map extends Element
     {
         return $this->tiles;
     }
+    
+    /**
+     * Returns the width (in tiles) of the map.
+     * 
+     * @return int
+     */
+    public function getWidth()
+    {
+        return $this->width;
+    }
 }
