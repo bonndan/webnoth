@@ -45,7 +45,8 @@ class Parser
         $this->lexer->moveNext();
         while (null !== $this->lexer->lookahead) {
             if (Lexer::T_OPEN_ELEMENT == $this->lexer->lookahead['type']) {
-                $currentElement = new Element();
+                $className = "\Webnoth\WML\Element\\" . $this->getElementName($this->lexer->lookahead['value']);
+                $currentElement = new $className();
             }
 
             if (Lexer::T_VALUE == $this->lexer->lookahead['type']) {
@@ -70,4 +71,18 @@ class Parser
         return $collection;
     }
 
+    /**
+     * Converts an underscored tag name to camel case style
+     * 
+     * @param string $value
+     * @return string
+     * @link http://php.net/manual/vote-note.php?id=92092&page=function.ucwords&vote=down
+     */
+    protected function getElementName($value)
+    {
+        $className = trim($value, '[]');
+        $className = preg_replace('/(?:^|_)(.?)/e',"strtoupper('$1')", $className);
+        
+        return $className;
+    }
 }

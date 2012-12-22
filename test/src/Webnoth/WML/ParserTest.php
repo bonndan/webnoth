@@ -53,6 +53,17 @@ class ParserTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * ensures the collection contains WML TerrainType elements only
+     */
+    public function testParserReturnsCollectionOfCorrespondingClasses()
+    {
+        $result = $this->parser->parse($this->getInput());
+        foreach ($result as $element) {
+            $this->assertInstanceOf("\Webnoth\WML\Element\TerrainType", $element);
+        }
+    }
+    
+    /**
      * ensures the attributes are assigned properly on the elements
      */
     public function testParsedElementsHaveAllAttributes()
