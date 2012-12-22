@@ -1,9 +1,9 @@
 <?php
 /**
- * GenerateCommand
+ * ParseTerrain
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
- * @package PPDoc
+ * @package Webnoth
  */
 namespace Webnoth\Console\Command;
 
@@ -14,16 +14,10 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Usage
- * =====
- * "ppdoc generate" takes two arguments:
- * 
- * ```
- * php ppdoc.php generate ./src/ ./ppdoc/
- * ```
+ * Terrain parses which caches its output.
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
- * @package PPDoc
+ * @package Webnoth
  */
 class ParseTerrain extends Command
 {
