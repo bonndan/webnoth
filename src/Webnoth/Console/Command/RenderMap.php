@@ -36,8 +36,8 @@ class RenderMap extends Command
             )
             ->addArgument(
                 self::DESTINATION_ARG,
-                InputArgument::REQUIRED,
-                'Which is the outut file?'
+                InputArgument::OPTIONAL,
+                'Which is the output file?'
             )
         ;
     }
@@ -51,7 +51,7 @@ class RenderMap extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mapName  = $input->getArgument(self::MAP);
-        $dest     = $input->getArgument(self::DESTINATION_ARG);
+        
         $cache    = $this->getCache();
         $terrain  = $cache->fetch('terrain');
         $map      = $this->getMap($mapName);
@@ -59,10 +59,12 @@ class RenderMap extends Command
         $renderer = new \Webnoth\MapRenderer($terrain);
         $image    = $renderer->render($map);
         
+        $dest     = $input->getArgument(self::DESTINATION_ARG);
+        if ($dest == null) {
+            $dest = APPLICATION_PATH . '/cache/' . $mapName . '.png';
+        }
+        $output->writeln('Render the map ' . $mapName . ' to ' . $dest);
         imagepng($image, $dest);
-        
-        //$destination = $input->getArgument(self::DESTINATION_ARG);
-        $output->writeln('Renderer the map ' . $mapName . ' to ' . $dest);
     }
     
     /**
