@@ -80,8 +80,8 @@ class MapRenderer
             imagecopy(
                 $image,
                 $terrainImage, 
-                ($col * (0.75 * self::TILE_WIDTH)),
-                $row * self::TILE_HEIGHT + $yOffset,
+                (($col-1) * (0.75 * self::TILE_WIDTH)),
+                ($row-1) * self::TILE_HEIGHT + $yOffset,
                 0,
                 0,
                 self::TILE_WIDTH,
@@ -135,11 +135,11 @@ class MapRenderer
         /*
          * width: tiles per row plus half tile extra for row x-offset
          */
-        $width = $map->getWidth() * self::TILE_WIDTH + self::TILE_WIDTH/2;
+        $width = $map->getWidth() * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
         /*
          * height: half of the rows plus half tile extra for row y-offset
          */
-        $height = (count($map->getTiles()) / $map->getWidth())/2 * self::TILE_HEIGHT + self::TILE_HEIGHT/2;
+        $height = count($map->getTiles()) / $map->getWidth() * self::TILE_HEIGHT + self::TILE_HEIGHT/2;
         return imagecreatetruecolor($width, $height);
     }
 }
