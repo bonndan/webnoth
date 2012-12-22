@@ -45,6 +45,12 @@ class MapRenderer
     protected $terrainResources = array();
     
     /**
+     * render plugins
+     * @var Plugin[]
+     */
+    protected $plugins = array();
+    
+    /**
      * Initialize the renderer with the available terrains.
      * 
      * @param \Doctrine\Common\Collections\Collection $terrainTypes
@@ -57,6 +63,9 @@ class MapRenderer
         }
         
         $this->imagePath = APPLICATION_PATH . '/data/terrain/';
+        
+        //separator is a default plugin
+        $this->plugins[] = new \Webnoth\Renderer\Plugin\Separator();
     }
     
     /**
@@ -67,6 +76,12 @@ class MapRenderer
      */
     public function render(Map $map)
     {
+        //initialize the plugins with the map
+        foreach ($this->plugins as $plugin) {
+            $plugin->setMap($map);
+        }
+        
+        //create the output image
         $image = $this->getImageResource($map);
         
         $col = 1;
@@ -76,17 +91,19 @@ class MapRenderer
             //offsets
             $yOffset = ($col%2) ? self::TILE_HEIGHT/2 : 0;
             
-            $terrainImage = $this->getTerrainResource($tile);
-            imagecopy(
-                $image,
-                $terrainImage, 
-                (($col-1) * (0.75 * self::TILE_WIDTH)),
-                ($row-1) * self::TILE_HEIGHT + $yOffset,
-                0,
-                0,
-                self::TILE_WIDTH,
-                self::TILE_HEIGHT
-            );
+            $terrainImages = $this->getTerrainsForTile($tile);
+            foreach ($terrainImages as $terrainImage) {
+                imagecopy(
+                    $image,
+                    $terrainImage, 
+                    (($col-1) * (0.75 * self::TILE_WIDTH)),
+                    ($row-1) * self::TILE_HEIGHT + $yOffset,
+                    0,
+                    0,
+                    self::TILE_WIDTH,
+                    self::TILE_HEIGHT
+                );
+            }
             $col++;
             if ($col == $map->getWidth() +1) {
                 $col = 1;
@@ -98,6 +115,26 @@ class MapRenderer
     }
     
     /**
+     * Returns array of gd image resource for the tile
+     * 
+     * @param string $tile
+     * @return array(resource)
+     */
+    protected function getTerrainsForTile($tile)
+    {
+        $stack = array($tile);
+        foreach ($this->plugins as $plugin) {
+            $plugin->getTileTerrains($stack);
+        }
+        
+        $terrains = array();
+        foreach ($stack as $terrainType) {
+            $terrains[] = $this->getTerrainResource($terrainType);
+        }
+        return $terrains;
+    }
+    
+    /**
      * Returns a gd image resource for a specific terrain type
      * 
      * @param string $terrain
@@ -105,12 +142,6 @@ class MapRenderer
      */
     protected function getTerrainResource($terrain)
     {
-        //fixme
-        if (strpos($terrain, '^') !== false) {
-            $terrains = explode('^', $terrain);
-            $terrain = $terrains[0];
-        }
-        
         if (!isset($this->terrainResources[$terrain])) {
             $file = $this->terrainTypes[$terrain]->getSymbolImage();
             $path = $this->imagePath . $file . '.png';
@@ -132,14 +163,18 @@ class MapRenderer
      */
     protected function getImageResource(Map $map)
     {
-        /*
-         * width: tiles per row plus half tile extra for row x-offset
-         */
         $width = $map->getWidth() * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
-        /*
-         * height: half of the rows plus half tile extra for row y-offset
-         */
         $height = count($map->getTiles()) / $map->getWidth() * self::TILE_HEIGHT + self::TILE_HEIGHT/2;
         return imagecreatetruecolor($width, $height);
+    }
+    
+    /**
+     * Add a plugin that can modify the terrain stack for a tile
+     * 
+     * @param \Webnoth\Renderer\Plugin $plugin
+     */
+    public function addPlugin(\Webnoth\Renderer\Plugin $plugin)
+    {
+        $this->plugins[] = $plugin;
     }
 }
