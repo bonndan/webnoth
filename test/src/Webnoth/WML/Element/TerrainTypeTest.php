@@ -38,4 +38,13 @@ class TerrainTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('^Fds', $this->terrain->getString());
     }
     
+    /**
+     * 
+     */
+    public function testGetSymbolImage()
+    {
+        $this->terrain->offsetSet('symbol_image', 'water/ocean-grey-tile');
+        $this->assertEquals('water/ocean-grey-tile', $this->terrain->getSymbolImage());
+    }
+    
 }

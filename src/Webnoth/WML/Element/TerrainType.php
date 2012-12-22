@@ -18,4 +18,14 @@ class TerrainType extends Element
     {
         return $this->offsetGet('string');
     }
+    
+    /**
+     * Returns the symbol_image attribute
+     * 
+     * @return string
+     */
+    public function getSymbolImage()
+    {
+        return $this->offsetGet('symbol_image');
+    }
 }
