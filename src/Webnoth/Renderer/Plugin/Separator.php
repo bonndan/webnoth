@@ -15,7 +15,7 @@ class Separator implements \Webnoth\Renderer\Plugin
      * 
      * @param array $tileStack
      */
-    public function getTileTerrains(array &$tileStack)
+    public function getTileTerrains(array &$tileStack, $column, $row)
     {
         $offset = -1;
         foreach ($tileStack as $terrainType) {
@@ -26,7 +26,7 @@ class Separator implements \Webnoth\Renderer\Plugin
             }
             
             array_splice($tileStack, $offset, 1, $newTerrain);
-            return $this->getTileTerrains($tileStack);
+            return $this->getTileTerrains($tileStack, $column, $row);
         }
     }
     

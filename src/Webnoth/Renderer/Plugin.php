@@ -22,5 +22,5 @@ interface Plugin
      * 
      * @param array $tileStack
      */
-    public function getTileTerrains(array &$tileStack);
+    public function getTileTerrains(array &$tileStack, $column, $row);
 }

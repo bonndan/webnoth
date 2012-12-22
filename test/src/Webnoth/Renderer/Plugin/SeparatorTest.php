@@ -34,7 +34,7 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
     public function testStackIsNotModified()
     {
         $stack = array('Gg', 'Ww');
-        $this->separator->getTileTerrains($stack);
+        $this->separator->getTileTerrains($stack, 0, 0);
         $this->assertEquals(array('Gg', 'Ww'), $stack);
     }
     
@@ -44,7 +44,7 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
     public function testStackIsModified()
     {
         $stack = array('Gg^Fsd', 'Ww', 'Ww^Fsd');
-        $this->separator->getTileTerrains($stack);
+        $this->separator->getTileTerrains($stack, 0, 0);
         $this->assertEquals(array('Gg', '^Fsd', 'Ww', 'Ww', '^Fsd'), $stack);
     }
 }
