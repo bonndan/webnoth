@@ -38,7 +38,7 @@ class ParseTerrain extends Command
     }
 
     /**
-     * executes the parser
+     * executes the parser, returns an indexed terrain collection
      * 
      * @param \Symfony\Component\Console\Input\InputInterface $input
      * @param \Symfony\Component\Console\Output\OutputInterface $output
@@ -53,8 +53,16 @@ class ParseTerrain extends Command
         $parser = new \Webnoth\WML\Parser($lexer);
         $result = $parser->parse(file_get_contents($file));
         
+        /*
+         * index the terrain collection
+         */
+        $collection = new \Doctrine\Common\Collections\ArrayCollection();
+        foreach ($result->toArray() as $terrain) {
+            $collection->set($terrain->getString(), $terrain);
+        }
+        
         $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
-        $cache->save('terrain', $result);
+        $cache->save('terrain', $collection);
         
         //$destination = $input->getArgument(self::DESTINATION_ARG);
         $output->writeln('Parsed the terrain file successfully.');
