@@ -50,6 +50,19 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * Ensures the correct width is returned
+     */
+    public function testAddStartingPositions()
+    {
+        $row = array('Gg', '3 Ke', 'Gg', '2 Gg');
+        $this->map->addRawTileRow($row);
+        $this->assertEquals(2, count($this->map->getStartingPositions()));
+        $positions = $this->map->getStartingPositions();
+        $this->assertEquals(3, $positions[1]);
+        $this->assertEquals(2, $positions[3]);
+    }
+    
+    /**
      * ensures all added tiles are stored
      */
     public function testAddRawTileRowTwice()

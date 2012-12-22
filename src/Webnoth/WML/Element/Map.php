@@ -23,6 +23,12 @@ class Map extends Element
     protected $tiles = array();
     
     /**
+     * all starting positions of the sides
+     * @var array (tilenumber => position)
+     */
+    protected $startingPositions = array();
+        
+    /**
      * adds a row of tiles (terrain type strings)
      * 
      * @param array $tiles
@@ -31,6 +37,15 @@ class Map extends Element
     {
         $this->setWidth(count($tiles));
         foreach ($tiles as $rawTile) {
+            
+            /*
+             * starting positions are noted like "... GG, 3 Ke, Gg, ..."
+             */
+            if (strpos($rawTile, ' ') !== false) {
+                $parts = explode(' ', $rawTile);
+                $this->startingPositions[count($this->tiles)] = $parts[0];
+                $rawTile = $parts[1];
+            }
             $this->tiles[] = $rawTile;
         }
     }
@@ -69,5 +84,14 @@ class Map extends Element
     public function getWidth()
     {
         return $this->width;
+    }
+    
+    /**
+     * Returns the starting positions per side
+     * @return array
+     */
+    public function getStartingPositions()
+    {
+        return $this->startingPositions;
     }
 }
