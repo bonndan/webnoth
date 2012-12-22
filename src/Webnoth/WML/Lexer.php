@@ -26,6 +26,7 @@ class Lexer extends \Doctrine\Common\Lexer
     {
         return array(
             '\[\/?[A-Za-z0-9_]*\]', //opening and closing of elements
+            '"[A-Za-z0-9_\/\s]*"', //anything in parentheses
             '[A-Za-z0-9_"\/]*(?=\=)',
             '[A-Za-z0-9_"\/]*(?<=\=)',
             '=',
@@ -41,7 +42,7 @@ class Lexer extends \Doctrine\Common\Lexer
     {
         return array(
             '\s+',
-            '\s_\s',
+            '\_ ',
             '#.*[\r\n|\n]', //ignore comments
         );
     }

@@ -48,7 +48,10 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, count($elementOpeners));
     }
     
-    public function testFindsAttribute()
+    /**
+     * ensures the attributes are found
+     */
+    public function testFindsAttributes()
     {
         $this->lexer->setInput($this->getInput());
         $attrs = $this->getTokensOfType(Lexer::T_VALUE);
@@ -57,6 +60,15 @@ class LexerTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEquals('id', $attrs[2]['value']);
         $this->assertEquals('deep_water_gray', $attrs[3]['value']);
+        
+        $this->assertEquals('editor_name', $attrs[4]['value']);
+        $this->assertEquals('"Gray Deep Water"', $attrs[5]['value']);
+        
+        $this->assertEquals('string', $attrs[6]['value']);
+        $this->assertEquals('Wog', $attrs[7]['value']);
+        
+        $this->assertEquals('symbol_image', $attrs[14]['value']);
+        $this->assertEquals('water/ocean-tile', $attrs[15]['value']);
     }
     
     /**
