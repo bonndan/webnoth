@@ -91,7 +91,7 @@ class MapRenderer
             //offsets
             $yOffset = ($col%2) ? self::TILE_HEIGHT/2 : 0;
             
-            $terrainImages = $this->getTerrainsForTile($tile);
+            $terrainImages = $this->getTerrainsForTile($tile, $col, $row);
             foreach ($terrainImages as $terrainImage) {
                 imagecopy(
                     $image,
@@ -118,13 +118,15 @@ class MapRenderer
      * Returns array of gd image resource for the tile
      * 
      * @param string $tile
+     * @param int    $column
+     * @param int    $row
      * @return array(resource)
      */
-    protected function getTerrainsForTile($tile)
+    protected function getTerrainsForTile($tile, $column, $row)
     {
         $stack = array($tile);
         foreach ($this->plugins as $plugin) {
-            $plugin->getTileTerrains($stack);
+            $plugin->getTileTerrains($stack, $column, $row);
         }
         
         $terrains = array();
