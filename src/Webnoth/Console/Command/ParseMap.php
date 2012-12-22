@@ -54,10 +54,11 @@ class ParseMap extends Command
         $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
         $cache->setNamespace('map');
         
-        $filename = basename($file, 'cfg');
+        $filename = basename($file, '.map');
         $cache->save($filename, $result);
         
         //$destination = $input->getArgument(self::DESTINATION_ARG);
-        $output->writeln('Parsed the map ' . $filename .' successfully: ' . count($result->getTiles()). ' tiles');
+        $output->writeln('Parsed the map ' . $filename .' successfully: ' . count($result->getTiles()). ' tiles.');
+        $output->writeln('Cached the result under: ' . $filename);
     }
 }
