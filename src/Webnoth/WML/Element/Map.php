@@ -94,4 +94,49 @@ class Map extends Element
     {
         return $this->startingPositions;
     }
+    
+    /**
+	 * return surrounding tiles by direction
+	 * 
+     * @param int $column
+     * @param int $row
+	 * @return array
+	 */
+    public function getSurroundingTerrains($column, $row)
+    {
+		if($column%2) {//odd column
+			return array(
+				'ne' => $this->getTerrainAt($column+1, $row),
+				'se' => $this->getTerrainAt($column+1, $row+1),
+				's'  => $this->getTerrainAt($column, $row+1),
+				'sw' => $this->getTerrainAt($column-1, $row+1),
+				'nw' => $this->getTerrainAt($column-1, $row),
+				'n'  => $this->getTerrainAt($column, $row-1)
+			);
+        } else {
+			return array(
+				'ne' => $this->getTerrainAt($column+1, $row-1),
+				'se' => $this->getTerrainAt($column+1, $row),
+				's'  => $this->getTerrainAt($column, $row+1),
+				'sw' => $this->getTerrainAt($column-1, $row),
+				'nw' => $this->getTerrainAt($column-1, $row-1),
+				'n'  => $this->getTerrainAt($column, $row-1)
+			);
+        }
+    }
+    
+    /**
+     * Returns the terrain type (raw) at a given offset
+     * 
+     * @param int $column
+     * @param int $row
+     */
+    public function getTerrainAt($column, $row)
+    {
+        $offset = ($row -1) * $this->getWidth() + ($column -1);
+        if (!isset($this->tiles[$offset])) {
+            return TerrainType::VOID;
+        }
+        return $this->tiles[$offset];
+    }
 }

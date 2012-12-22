@@ -9,6 +9,8 @@ use Webnoth\WML\Element;
  */
 class TerrainType extends Element
 {
+    const VOID = 'Xv';
+    
     /**
      * Returns the string attribute (used in map files)
      * 
