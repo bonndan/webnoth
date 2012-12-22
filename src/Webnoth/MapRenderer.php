@@ -57,15 +57,11 @@ class MapRenderer
      */
     public function __construct(Collection $terrainTypes)
     {
-        foreach ($terrainTypes as $terrain) {
-            /* @var $terrain TerrainType */
-            $this->terrainTypes[$terrain->getString()] = $terrain;
-        }
-        
-        $this->imagePath = APPLICATION_PATH . '/data/terrain/';
+        $this->terrainTypes = $terrainTypes;
+        $this->imagePath    = APPLICATION_PATH . '/data/terrain/';
         
         //separator is a default plugin
-        $this->plugins[] = new \Webnoth\Renderer\Plugin\Separator();
+        $this->plugins[]    = new \Webnoth\Renderer\Plugin\Separator();
     }
     
     /**
@@ -145,7 +141,7 @@ class MapRenderer
     protected function getTerrainResource($terrain)
     {
         if (!isset($this->terrainResources[$terrain])) {
-            $file = $this->terrainTypes[$terrain]->getSymbolImage();
+            $file = $this->terrainTypes->get($terrain)->getSymbolImage();
             $path = $this->imagePath . $file . '.png';
             $this->terrainResources[$terrain] = imagecreatefrompng($path);
         }

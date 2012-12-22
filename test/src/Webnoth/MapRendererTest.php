@@ -95,7 +95,7 @@ class MapRendererTest extends \PHPUnit_Framework_TestCase
         $terrain->offsetSet('string', 'Gg');
         $terrain->offsetSet('symbol_image', 'foreground');
         $elements = array(
-            $terrain
+            $terrain->getString() => $terrain
         );
         return new \Doctrine\Common\Collections\ArrayCollection($elements);
     }
