@@ -56,7 +56,7 @@ class ParseTerrain extends Command
         /*
          * index the terrain collection
          */
-        $collection = new \Doctrine\Common\Collections\ArrayCollection();
+        $collection = new \Webnoth\WML\Collection\TerrainTypes();
         foreach ($result->toArray() as $terrain) {
             $collection->set($terrain->getString(), $terrain);
         }
