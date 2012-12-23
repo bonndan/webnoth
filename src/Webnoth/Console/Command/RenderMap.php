@@ -57,6 +57,10 @@ class RenderMap extends Command
         $map      = $this->getMap($mapName);
         
         $renderer = new \Webnoth\MapRenderer($terrain);
+        
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Separator());
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Transitions($terrain));
+        
         $image    = $renderer->render($map);
         
         $dest     = $input->getArgument(self::DESTINATION_ARG);
