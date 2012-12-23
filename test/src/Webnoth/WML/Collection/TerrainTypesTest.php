@@ -46,6 +46,11 @@ class TerrainTypesTest extends \PHPUnit_Framework_TestCase
         parent::tearDown();
     }
     
+    public function testGetBaseTerrainOfTerrainWithCaret()
+    {
+        $this->assertEquals('Gt', $this->collection->getBaseTerrain('Gg^Fsd'));
+    }
+    
     public function testGetBaseTerrainOfBaseTerrain()
     {
         $this->assertEquals('Gt', $this->collection->getBaseTerrain('Gt'));

@@ -21,7 +21,7 @@ class TerrainTypes extends ArrayCollection
      */
     public function getBaseTerrain($rawTerrain)
     {
-        if (strpos($rawTerrain, '^') === false) {
+        if (strpos($rawTerrain, '^') !== false) {
             $rawTerrain = current(explode('^', $rawTerrain));
         }
 
@@ -29,7 +29,7 @@ class TerrainTypes extends ArrayCollection
         /* @var $terrain \Webnoth\WML\Element\TerrainType */
         $terrain = $this->get($rawTerrain);
         if ($terrain === null) {
-            throw new \RuntimeException('Unknown terrain' . $rawTerrain);
+            throw new \RuntimeException('Unknown terrain: ' . $rawTerrain);
         }
         
         if ($terrain->offsetExists('default_base')) {
