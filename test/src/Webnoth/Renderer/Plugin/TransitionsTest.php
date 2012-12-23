@@ -48,7 +48,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
         $result = $this->plugin->getTerrainTransitions($surrounding, 'Ww');
         $this->assertInternalType('array', $result);
         $this->assertEquals(1, count($result));
-        $this->assertContains('water/coast-tile_sw_nw_n', $result, var_export($result, true));
+        $this->assertContains('water/coast-tile-sw-nw-n', $result, var_export($result, true));
     }
     
     /**
@@ -60,9 +60,9 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
         $result = $this->plugin->getTerrainTransitions($surrounding, 'Ww', false);
         $this->assertInternalType('array', $result);
         $this->assertEquals(3, count($result));
-        $this->assertContains('water/coast-tile_sw', $result);
-        $this->assertContains('water/coast-tile_nw', $result);
-        $this->assertContains('water/coast-tile_n', $result);
+        $this->assertContains('water/coast-tile-sw', $result);
+        $this->assertContains('water/coast-tile-nw', $result);
+        $this->assertContains('water/coast-tile-n', $result);
     }
     
     /**
@@ -104,7 +104,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
         $this->plugin->getTileTerrains($stack, 2, 2);
         
         $this->assertEquals(1, count($stack));
-        $this->assertContains('water/coast-tile_sw_nw_n', $stack, var_export($stack, true));
+        $this->assertContains('water/coast-tile-sw-nw-n', $stack, var_export($stack, true));
     }
     
     /**

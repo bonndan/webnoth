@@ -214,7 +214,7 @@ class Transitions implements \Webnoth\Renderer\Plugin
         if ($merged != true) {
             foreach ($hasTransition as $direction => $set) {
                 if ($set)
-                    $transitions[] = $currentTerrainImage . '_' . $direction;
+                    $transitions[] = $currentTerrainImage . '-' . $direction;
             }
             return $transitions;
         }
@@ -246,7 +246,7 @@ class Transitions implements \Webnoth\Renderer\Plugin
 
         //one div for each cluster
         foreach ($cluster as $c) {
-            $transitions[] = $currentTerrainImage . '_' . implode('_', $c);
+            $transitions[] = $currentTerrainImage . '-' . implode('-', $c);
         }
         
         return $transitions;
