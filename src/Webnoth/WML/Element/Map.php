@@ -94,6 +94,16 @@ class Map extends Element
     }
     
     /**
+     * Returns the height as number of rows
+     * 
+     * @return int
+     */
+    public function getHeight()
+    {
+        return count($this->rows);
+    }
+    
+    /**
      * Returns the starting positions per side
      * @return array
      */

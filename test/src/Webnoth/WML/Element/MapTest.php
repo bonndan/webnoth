@@ -169,4 +169,17 @@ class MapTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertEquals($expected, $surrounding);
     }
+    
+    /**
+     * Ensures the number of rows is returned
+     */
+    public function testGetHeight()
+    {
+        $row = array('00', '10', '20', '30');
+        $this->map->addRawTileRow($row);
+        $row = array('01', '11', '21', '31');
+        $this->map->addRawTileRow($row);
+        
+        $this->assertEquals(2, $this->map->getHeight());
+    }
 }
