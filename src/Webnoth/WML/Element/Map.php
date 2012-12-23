@@ -43,7 +43,7 @@ class Map extends Element
              */
             if (strpos($rawTile, ' ') !== false) {
                 $parts = explode(' ', $rawTile);
-                $this->startingPositions[$parts[0]] = array(count($this->rows)+1, $key);
+                $this->startingPositions[$parts[0]] = array(count($this->rows), $key);
                 $rawTile = $parts[1];
             }
             $tiles[$key] = $rawTile;

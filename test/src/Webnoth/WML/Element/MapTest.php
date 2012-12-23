@@ -57,9 +57,10 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $row = array('Gg', '3 Ke', 'Gg', '2 Gg');
         $this->map->addRawTileRow($row);
         $this->assertEquals(2, count($this->map->getStartingPositions()));
+        
         $positions = $this->map->getStartingPositions();
-        $this->assertEquals(3, $positions[1]);
-        $this->assertEquals(2, $positions[3]);
+        $this->assertEquals(array(0,1), $positions[3]);
+        $this->assertEquals(array(0,3), $positions[2]);
     }
     
     /**
