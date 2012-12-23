@@ -35,7 +35,10 @@ class TerrainTypes extends ArrayCollection
         if ($terrain->offsetExists('default_base')) {
             $rawTerrain = $terrain->offsetGet('default_base');
         } elseif ($terrain->offsetExists('alias_of')) {
-            $rawTerrain = $terrain->offsetGet('alias_of');
+            $parent = $this->get($terrain->offsetGet('alias_of'));
+            if (!$parent->isHidden()) {
+                $rawTerrain = $parent->getString();
+            }
         }
 
         return $rawTerrain;

@@ -31,11 +31,21 @@ class TerrainTypesTest extends \PHPUnit_Framework_TestCase
         $gt = new \Webnoth\WML\Element\TerrainType();
         $gt->offsetSet('string', 'Gt');
         
+        $parentHidden = new \Webnoth\WML\Element\TerrainType();
+        $parentHidden->offsetSet('string', 'Ph');
+        $parentHidden->offsetSet('alias_of', 'Gh');
+        
+        $hidden = new \Webnoth\WML\Element\TerrainType();
+        $hidden->offsetSet('string', 'Gh');
+        $hidden->offsetSet('hidden', 'yes');
+        
         $this->collection = new TerrainTypes(
             array(
                 'Gg' => $gg,
                 'Gx' => $gb,
-                'Gt' => $gt
+                'Gt' => $gt,
+                'Ph' => $parentHidden,
+                'Gh' => $hidden,
             )
         );
     }
@@ -64,6 +74,14 @@ class TerrainTypesTest extends \PHPUnit_Framework_TestCase
     public function testGetBaseTerrainByDefaultBase()
     {
         $this->assertEquals('Gt', $this->collection->getBaseTerrain('Gx'));
+    }
+    
+    /**
+     * ensures alias is not used of hidden
+     */
+    public function testGetBaseWhenAliasHidden()
+    {
+        $this->assertEquals('Ph', $this->collection->getBaseTerrain('Ph'));
     }
     
     public function testGetBaseTerrainException()
