@@ -130,6 +130,7 @@ class Map extends Element
      * 
      * @param int $column
      * @param int $row
+     * @return string
      */
     public function getTerrainAt($column, $row)
     {
