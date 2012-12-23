@@ -59,9 +59,6 @@ class MapRenderer
     {
         $this->terrainTypes = $terrainTypes;
         $this->imagePath    = APPLICATION_PATH . '/data/terrain/';
-        
-        //separator is a default plugin
-        $this->plugins[]    = new \Webnoth\Renderer\Plugin\Separator();
     }
     
     /**
