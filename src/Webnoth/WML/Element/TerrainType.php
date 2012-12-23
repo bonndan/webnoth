@@ -6,6 +6,9 @@ use Webnoth\WML\Element;
 
 /**
  * TerrainType
+ * 
+ * @author Daniel Pozzi <bonndan76@googlemail.com>
+ * @package Webnoth
  */
 class TerrainType extends Element
 {
