@@ -5,6 +5,7 @@ namespace Webnoth;
 use Webnoth\WML\Collection\TerrainTypes;
 use Webnoth\WML\Element\Map;
 use Webnoth\WML\Element\TerrainType;
+use \Webnoth\Renderer\Plugin;
 
 /**
  * MapRenderer
@@ -132,22 +133,54 @@ class MapRenderer
     /**
      * Returns a gd image resource for a specific terrain type
      * 
-     * @param string $terrain
+     * @param string $terrainString
      * @return resource
      */
-    protected function getTerrainResource($terrain)
+    protected function getTerrainResource($terrainString)
     {
-        if (!isset($this->terrainResources[$terrain])) {
-            $file = $this->terrainTypes->get($terrain)->getSymbolImage();
+        if (!isset($this->terrainResources[$terrainString])) {
+            
+            $terrain = $this->terrainTypes->get($terrainString);
+            if ($terrain === null) {
+                //fallback to direct image loading
+                $resource = $this->getTerrainImageResource($terrainString);
+                if ($resource != false) {
+                    return $resource;
+                }
+                
+                throw new \RuntimeException('Could not get() ' . $terrainString . ' from terrain types.');
+            }
+            
+            $file = $terrain->getSymbolImage();
             $path = $this->imagePath . $file . '.png';
-            $this->terrainResources[$terrain] = imagecreatefrompng($path);
+            $this->terrainResources[$terrainString] = imagecreatefrompng($path);
         }
         
-        if ($this->terrainResources[$terrain] == false) {
-            throw new \RuntimeException('Could not load the terrain ' . $terrain . ' from ' . $path);
+        if ($this->terrainResources[$terrainString] == false) {
+            throw new \RuntimeException('Could not load the terrain ' . $terrainString . ' from ' . $path);
         }
         
-        return $this->terrainResources[$terrain];
+        return $this->terrainResources[$terrainString];
+    }
+    
+    /**
+     * Returns a gd image resource for a specific terrain image
+     * 
+     * @param string $symbolImage
+     * @return resource
+     */
+    protected function getTerrainImageResource($symbolImage)
+    {
+        if (!isset($this->terrainResources[$symbolImage])) {
+            $path = $this->imagePath . $symbolImage . '.png';
+            $this->terrainResources[$symbolImage] = imagecreatefrompng($path);
+        }
+        
+        if ($this->terrainResources[$symbolImage] == false) {
+            throw new \RuntimeException('Could not load the terrain ' . $symbolImage . ' from ' . $path);
+        }
+        
+        return $this->terrainResources[$symbolImage];
     }
     
     /**
@@ -166,9 +199,9 @@ class MapRenderer
     /**
      * Add a plugin that can modify the terrain stack for a tile
      * 
-     * @param \Webnoth\Renderer\Plugin $plugin
+     * @param Plugin $plugin
      */
-    public function addPlugin(\Webnoth\Renderer\Plugin $plugin)
+    public function addPlugin(Plugin $plugin)
     {
         $this->plugins[] = $plugin;
     }
