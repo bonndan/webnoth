@@ -10,19 +10,13 @@ use \Webnoth\WML\Collection\TerrainTypes;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class Transitions implements \Webnoth\Renderer\Plugin
+class Transitions extends Base implements \Webnoth\Renderer\Plugin
 {
     /**
      * the terrain types
      * @var \Webnoth\WML\Collection\TerrainTypes
      */
     protected $terrainTypes = null;
-
-    /**
-     * the map
-     * @var \Webnoth\WML\Element\Map 
-     */
-    protected $map = null;
 
     /**
      * clockwise rotation for traversing surrounding tiles
@@ -72,6 +66,7 @@ class Transitions implements \Webnoth\Renderer\Plugin
             'Aa',
             'Ds',
             'Ql',
+            'Gg',
         ),
 
         //ocean
@@ -109,6 +104,20 @@ class Transitions implements \Webnoth\Renderer\Plugin
             'Ql'
         )
     );
+    
+    /**
+     * filters for tile naming
+     * @var array
+     */
+    protected $tileNameFilters = array(
+        'Ww' => array(
+            'ocean-tile' => 'ocean-long-A01',
+            'water/coast-tile' => 'water/coast-tropical-A01'
+        ),
+        'Gg' => array(
+            'water/coast-tile' => 'sand/beach'
+        )
+    );
 
     /**
      * Initialize the renderer with the available terrains.
@@ -120,16 +129,6 @@ class Transitions implements \Webnoth\Renderer\Plugin
         $this->terrainTypes = $terrainTypes;
     }
 
-    /**
-     * Injects the map.
-     * 
-     * @param \Webnoth\WML\Element\Map $map
-     */
-    public function setMap(\Webnoth\WML\Element\Map $map)
-    {
-        $this->map = $map;
-    }
-    
     /**
      * Adds tiles which provides a fluent transition between the tiles
      * 
@@ -216,7 +215,7 @@ class Transitions implements \Webnoth\Renderer\Plugin
                 if ($set)
                     $transitions[] = $currentTerrainImage . '-' . $direction;
             }
-            return $transitions;
+            return $this->filterTransitions($transitions, $currentTerrain);
         }
 
         $cluster = array();
@@ -247,6 +246,25 @@ class Transitions implements \Webnoth\Renderer\Plugin
         //one div for each cluster
         foreach ($cluster as $c) {
             $transitions[] = $currentTerrainImage . '-' . implode('-', $c);
+        }
+        
+        return $this->filterTransitions($transitions, $currentTerrain);
+    }
+    
+    /**
+     * 
+     * @param array $transitions
+     * @param string $currentTerrain
+     */
+    protected function filterTransitions(array $transitions, $currentTerrain)
+    {
+        if (empty($transitions) || !isset($this->tileNameFilters[$currentTerrain])) {
+            return $transitions;
+        }
+        
+        $filters = $this->tileNameFilters[$currentTerrain];
+        foreach ($transitions as $key => $transition) {
+            $transitions[$key] = str_replace(array_keys($filters), $filters, $transition);
         }
         
         return $transitions;

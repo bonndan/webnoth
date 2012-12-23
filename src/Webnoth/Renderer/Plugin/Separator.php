@@ -8,7 +8,7 @@ namespace Webnoth\Renderer\Plugin;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class Separator implements \Webnoth\Renderer\Plugin
+class Separator extends Base implements \Webnoth\Renderer\Plugin
 {
     /**
      * Modifies the stack.
@@ -52,14 +52,5 @@ class Separator implements \Webnoth\Renderer\Plugin
             $parts[$key] = '^' . $part;
         }
         return $parts;
-    }
-
-    /**
-     * Not needed.
-     * 
-     * @param \Webnoth\WML\Element\Map $map
-     */
-    public function setMap(\Webnoth\WML\Element\Map $map)
-    {
     }
 }
