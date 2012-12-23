@@ -89,16 +89,19 @@ class MapTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTerrainAt()
     {
-        $row = array('11', '21', '31', '41');
+        $row = array('00', '10', '20', '30');
         $this->map->addRawTileRow($row);
-        
-        $row = array('12', '22', '32', '42');
+        $row = array('01', '11', '21', '31');
+        $this->map->addRawTileRow($row);
+        $row = array('02', '12', '22', '32');
+        $this->map->addRawTileRow($row);
+        $row = array('03', '13', '23', '33');
         $this->map->addRawTileRow($row);
         
         $this->assertEquals('11', $this->map->getTerrainAt(1, 1));
         $this->assertEquals('22', $this->map->getTerrainAt(2, 2));
         $this->assertEquals('32', $this->map->getTerrainAt(3, 2));
-        $this->assertEquals('42', $this->map->getTerrainAt(4, 2));
+        $this->assertEquals('Xv', $this->map->getTerrainAt(4, 2));
     }
     
     /**
@@ -117,11 +120,13 @@ class MapTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetSurroundingTerrainsForEvenCol()
     {
-        $row = array('11', '21', '31', '41');
+        $row = array('00', '10', '20', '30');
         $this->map->addRawTileRow($row);
-        $row = array('12', '22', '32', '42');
+        $row = array('01', '11', '21', '31');
         $this->map->addRawTileRow($row);
-        $row = array('13', '23', '33', '43');
+        $row = array('02', '12', '22', '32');
+        $this->map->addRawTileRow($row);
+        $row = array('03', '13', '23', '33');
         $this->map->addRawTileRow($row);
         
         $surrounding = $this->map->getSurroundingTerrains(2, 2);
@@ -142,22 +147,24 @@ class MapTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetSurroundingTerrainsForOddCol()
     {
-        $row = array('11', '21', '31', '41');
+        $row = array('00', '10', '20', '30');
         $this->map->addRawTileRow($row);
-        $row = array('12', '22', '32', '42');
+        $row = array('01', '11', '21', '31');
         $this->map->addRawTileRow($row);
-        $row = array('13', '23', '33', '43');
+        $row = array('02', '12', '22', '32');
+        $this->map->addRawTileRow($row);
+        $row = array('03', '13', '23', '33');
         $this->map->addRawTileRow($row);
         
-        $surrounding = $this->map->getSurroundingTerrains(3, 2);
+        $surrounding = $this->map->getSurroundingTerrains(1, 1);
         $this->assertInternalType('array', $surrounding);
         $expected = array(
-            'ne' => '42',
-            'se' => '43',
-            's'  => '33',
-            'sw' => '23',
-            'nw' => '22',
-            'n'  => '31'
+            'ne' => '21',
+            'se' => '22',
+            's'  => '12',
+            'sw' => '02',
+            'nw' => '01',
+            'n'  => '10'
         );
         $this->assertEquals($expected, $surrounding);
     }

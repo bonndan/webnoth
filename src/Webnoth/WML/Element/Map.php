@@ -17,10 +17,10 @@ class Map extends Element
     protected $width = null;
     
     /**
-     * array of strings referring terrain types
+     * array of arrays referring terrain types
      * @var array
      */
-    protected $tiles = array();
+    protected $rows = array();
     
     /**
      * all starting positions of the sides
@@ -36,18 +36,20 @@ class Map extends Element
     public function addRawTileRow(array $tiles)
     {
         $this->setWidth(count($tiles));
-        foreach ($tiles as $rawTile) {
+        foreach ($tiles as $key => $rawTile) {
             
             /*
              * starting positions are noted like "... GG, 3 Ke, Gg, ..."
              */
             if (strpos($rawTile, ' ') !== false) {
                 $parts = explode(' ', $rawTile);
-                $this->startingPositions[count($this->tiles)] = $parts[0];
+                $this->startingPositions[$parts[0]] = array(count($this->rows)+1, $key);
                 $rawTile = $parts[1];
             }
-            $this->tiles[] = $rawTile;
+            $tiles[$key] = $rawTile;
         }
+        
+        $this->rows[] = $tiles;
     }
     
     /**
@@ -67,13 +69,18 @@ class Map extends Element
     }
     
     /**
-     * Returns all the tiles.
+     * Returns all the tiles as a stream.
      * 
      * @return array
      */
     public function getTiles()
     {
-        return $this->tiles;
+        $tiles = array();
+        foreach ($this->rows as $row) {
+            $tiles = array_merge($tiles, $row);
+        }
+        
+        return $tiles;
     }
     
     /**
@@ -101,6 +108,7 @@ class Map extends Element
      * @param int $column
      * @param int $row
 	 * @return array
+     * @link http://wiki.wesnoth.org/TerrainGraphicsTutorial#The_hex_coordinate_system
 	 */
     public function getSurroundingTerrains($column, $row)
     {
@@ -108,19 +116,19 @@ class Map extends Element
 			return array(
 				'ne' => $this->getTerrainAt($column+1, $row),
 				'se' => $this->getTerrainAt($column+1, $row+1),
-				's'  => $this->getTerrainAt($column, $row+1),
+				's'  => $this->getTerrainAt($column,   $row+1),
 				'sw' => $this->getTerrainAt($column-1, $row+1),
 				'nw' => $this->getTerrainAt($column-1, $row),
-				'n'  => $this->getTerrainAt($column, $row-1)
+				'n'  => $this->getTerrainAt($column,   $row-1)
 			);
         } else {
 			return array(
 				'ne' => $this->getTerrainAt($column+1, $row-1),
 				'se' => $this->getTerrainAt($column+1, $row),
-				's'  => $this->getTerrainAt($column, $row+1),
+				's'  => $this->getTerrainAt($column,   $row+1),
 				'sw' => $this->getTerrainAt($column-1, $row),
 				'nw' => $this->getTerrainAt($column-1, $row-1),
-				'n'  => $this->getTerrainAt($column, $row-1)
+				'n'  => $this->getTerrainAt($column,   $row-1)
 			);
         }
     }
@@ -134,10 +142,9 @@ class Map extends Element
      */
     public function getTerrainAt($column, $row)
     {
-        $offset = ($row -1) * $this->getWidth() + ($column -1);
-        if (!isset($this->tiles[$offset])) {
+        if (!isset($this->rows[$row][$column])) {
             return TerrainType::VOID;
         }
-        return $this->tiles[$offset];
+        return $this->rows[$row][$column];
     }
 }
