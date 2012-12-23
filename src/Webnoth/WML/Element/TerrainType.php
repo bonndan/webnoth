@@ -12,6 +12,10 @@ use Webnoth\WML\Element;
  */
 class TerrainType extends Element
 {
+    /**
+     * Void terrain type string
+     * @var string
+     */
     const VOID = 'Xv';
     
     /**
@@ -25,12 +29,15 @@ class TerrainType extends Element
     }
     
     /**
-     * Returns the symbol_image attribute
+     * Returns the editor_image attribute or symbol_image attribute as fallback
      * 
      * @return string
      */
     public function getSymbolImage()
     {
+        if ($this->offsetExists('editor_image')) {
+            return $this->offsetGet('editor_image');
+        }
         return $this->offsetGet('symbol_image');
     }
 }
