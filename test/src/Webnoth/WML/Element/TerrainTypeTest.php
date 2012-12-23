@@ -41,6 +41,23 @@ class TerrainTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * 
      */
+    public function testIsNotHidden()
+    {
+        $this->assertFalse($this->terrain->isHidden());
+    }
+    
+    /**
+     * 
+     */
+    public function testIsHidden()
+    {
+        $this->terrain->offsetSet('hidden', 'yes');
+        $this->assertTrue($this->terrain->isHidden());
+    }
+    
+    /**
+     * 
+     */
     public function testGetSymbolImage()
     {
         $this->terrain->offsetSet('symbol_image', 'water/ocean-grey-tile');

@@ -40,4 +40,14 @@ class TerrainType extends Element
         }
         return $this->offsetGet('symbol_image');
     }
+    
+    /**
+     * Check if the terrain is hidden (virtual).
+     * 
+     * @return boolean
+     */
+    public function isHidden()
+    {
+        return $this->offsetExists('hidden') && $this->offsetGet('hidden') == 'yes';
+    }
 }
