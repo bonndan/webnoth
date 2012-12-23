@@ -97,7 +97,7 @@ class MapRendererTest extends \PHPUnit_Framework_TestCase
         $elements = array(
             $terrain->getString() => $terrain
         );
-        return new \Doctrine\Common\Collections\ArrayCollection($elements);
+        return new \Webnoth\WML\Collection\TerrainTypes($elements);
     }
     
     /**

@@ -2,7 +2,7 @@
 
 namespace Webnoth;
 
-use Doctrine\Common\Collections\Collection;
+use Webnoth\WML\Collection\TerrainTypes;
 use Webnoth\WML\Element\Map;
 use Webnoth\WML\Element\TerrainType;
 
@@ -53,9 +53,9 @@ class MapRenderer
     /**
      * Initialize the renderer with the available terrains.
      * 
-     * @param \Doctrine\Common\Collections\Collection $terrainTypes
+     * @param TerrainTypes $terrainTypes
      */
-    public function __construct(Collection $terrainTypes)
+    public function __construct(TerrainTypes $terrainTypes)
     {
         $this->terrainTypes = $terrainTypes;
         $this->imagePath    = APPLICATION_PATH . '/data/terrain/';
