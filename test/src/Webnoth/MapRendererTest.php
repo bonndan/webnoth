@@ -56,7 +56,7 @@ class MapRendererTest extends \PHPUnit_Framework_TestCase
     /**
      * Ensures the plugins receive the terrain stack
      */
-    public function testPluginRHandlesStackOnRender()
+    public function testPluginHandlesStackOnRender()
     {
         $plugin = $this->createPluginMock();
         $this->renderer->addPlugin($plugin);
@@ -64,6 +64,43 @@ class MapRendererTest extends \PHPUnit_Framework_TestCase
         $map = $this->createMap();
         $plugin->expects($this->exactly(2))
             ->method('getTileTerrains');
+        $this->renderer->render($map);
+    }
+    
+    /**
+     * Ensures custom images can be resolved
+     */
+    public function testRenderWithCustomTerrainImages()
+    {
+        $map = new \Webnoth\WML\Element\Map();
+        $map->addRawTileRow(array('sand/beach'));
+        
+        $this->setExpectedException(null);
+        $this->renderer->render($map);
+    }
+    
+    /**
+     * Ensures custom images can be resolved
+     */
+    public function testRenderWithNotExistingCustomTerrainImage()
+    {
+        $map = new \Webnoth\WML\Element\Map();
+        $map->addRawTileRow(array('xxx/yyy'));
+        
+        $this->setExpectedException("\RuntimeException");
+        $this->renderer->render($map);
+    }
+    
+    /**
+     * Ensures resouces can be used instead of terrain strings
+     */
+    public function testResourcesCanBeUsedInsteadOfTerrains()
+    {
+        $map = new \Webnoth\WML\Element\Map();
+        $map->addRawTileRow(array('Gg'));
+        
+        $this->renderer->addPlugin(new TestPlugin);
+        $this->setExpectedException(null);
         $this->renderer->render($map);
     }
     
@@ -112,4 +149,18 @@ class MapRendererTest extends \PHPUnit_Framework_TestCase
         
         return $map;
     }
+}
+
+class TestPlugin implements \Webnoth\Renderer\Plugin
+{
+    public function getTileTerrains(array &$tileStack, $column, $row)
+    {
+        $tileStack[] = imagecreatetruecolor(72, 72);
+    }
+
+    public function setMap(WML\Element\Map $map)
+    {
+        
+    }
+
 }

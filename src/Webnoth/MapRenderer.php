@@ -52,6 +52,12 @@ class MapRenderer
     protected $plugins = array();
     
     /**
+     * behave gracefully?
+     * @var boolean
+     */
+    protected $isGraceful = false;
+    
+    /**
      * Initialize the renderer with the available terrains.
      * 
      * @param TerrainTypes $terrainTypes
@@ -78,8 +84,8 @@ class MapRenderer
         //create the output image
         $image = $this->getImageResource($map);
         
-        $col = 1;
-        $row = 1;
+        $col = 0;
+        $row = 0;
         foreach ($map->getTiles() as $tile) {
             
             //offsets
@@ -87,25 +93,42 @@ class MapRenderer
             
             $terrainImages = $this->getTerrainsForTile($tile, $col, $row);
             foreach ($terrainImages as $terrainImage) {
+                $x = ($col * (0.75 * self::TILE_WIDTH));
+                $y = ($row) * self::TILE_HEIGHT + $yOffset;
                 imagecopy(
                     $image,
                     $terrainImage, 
-                    (($col-1) * (0.75 * self::TILE_WIDTH)),
-                    ($row-1) * self::TILE_HEIGHT + $yOffset,
+                    $x,
+                    $y,
                     0,
                     0,
                     self::TILE_WIDTH,
                     self::TILE_HEIGHT
                 );
             }
+            $this->stampCoordinates($image, $x, $y, $col . '.' . $row);
             $col++;
-            if ($col == $map->getWidth() +1) {
-                $col = 1;
+            if ($col == $map->getWidth()) {
+                $col = 0;
                 $row++;
             }
         }
         
         return $image;
+    }
+    
+    /**
+     * prints coordinates on the image
+     * 
+     * @param resource $image
+     * @param int      $x
+     * @param int      $y
+     * @param string   $string
+     */
+    protected function stampCoordinates($image, $x, $y, $string)
+    {
+        $black = imagecolorallocate($image, 0, 0, 0);
+        imagestring($image, 0, $x + self::TILE_HEIGHT/2, $y + self::TILE_HEIGHT/2, $string, $black);
     }
     
     /**
@@ -125,7 +148,15 @@ class MapRenderer
         
         $terrains = array();
         foreach ($stack as $terrainType) {
-            $terrains[] = $this->getTerrainResource($terrainType);
+            try {
+                $terrains[] = $this->getTerrainResource($terrainType);
+            } catch (\RuntimeException $exception) {
+                if ($this->isGraceful) {
+                    continue;
+                } else {
+                    throw $exception;
+                }
+            }
         }
         return $terrains;
     }
@@ -138,6 +169,10 @@ class MapRenderer
      */
     protected function getTerrainResource($terrainString)
     {
+        if (is_resource($terrainString)) {
+            return $terrainString;
+        }
+        
         if (!isset($this->terrainResources[$terrainString])) {
             
             $terrain = $this->terrainTypes->get($terrainString);
@@ -157,7 +192,7 @@ class MapRenderer
         }
         
         if ($this->terrainResources[$terrainString] == false) {
-            throw new \RuntimeException('Could not load the terrain ' . $terrainString . ' from ' . $path);
+            throw new \RuntimeException('Could not load the terrain ' . $terrainString);
         }
         
         return $this->terrainResources[$terrainString];
@@ -168,16 +203,20 @@ class MapRenderer
      * 
      * @param string $symbolImage
      * @return resource
+     * @throws \RuntimeException
      */
     protected function getTerrainImageResource($symbolImage)
     {
         if (!isset($this->terrainResources[$symbolImage])) {
             $path = $this->imagePath . $symbolImage . '.png';
+            if (!is_file($path)) {
+                throw new \RuntimeException('Could not load the terrain ' . $symbolImage . ' from ' . $path);
+            }
             $this->terrainResources[$symbolImage] = imagecreatefrompng($path);
         }
         
         if ($this->terrainResources[$symbolImage] == false) {
-            throw new \RuntimeException('Could not load the terrain ' . $symbolImage . ' from ' . $path);
+            throw new \RuntimeException('Could not create image ' . $symbolImage . ' from ' . $path);
         }
         
         return $this->terrainResources[$symbolImage];
@@ -191,8 +230,8 @@ class MapRenderer
      */
     protected function getImageResource(Map $map)
     {
-        $width = $map->getWidth() * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
-        $height = count($map->getTiles()) / $map->getWidth() * self::TILE_HEIGHT + self::TILE_HEIGHT/2;
+        $width  = $map->getWidth()  * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
+        $height = $map->getHeight() * self::TILE_HEIGHT       + self::TILE_HEIGHT/2;
         return imagecreatetruecolor($width, $height);
     }
     
@@ -204,5 +243,15 @@ class MapRenderer
     public function addPlugin(Plugin $plugin)
     {
         $this->plugins[] = $plugin;
+    }
+    
+    /**
+     * toggles graceful behaviour if images cannot be found
+     * 
+     * @param bool $flag
+     */
+    public function setGraceful($flag)
+    {
+        $this->isGraceful = (bool)$flag;
     }
 }
