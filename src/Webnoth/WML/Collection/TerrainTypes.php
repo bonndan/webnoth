@@ -21,7 +21,8 @@ class TerrainTypes extends ArrayCollection
      */
     public function getBaseTerrain($rawTerrain, $allowHidden = false)
     {
-        if (strpos($rawTerrain, '^') !== false) {
+        //no caret or not at the beginning means two terrains in string
+        if (strpos($rawTerrain, '^') > 0) {
             $rawTerrain = current(explode('^', $rawTerrain));
         }
         
