@@ -19,12 +19,11 @@ class TerrainTypes extends ArrayCollection
      * @return string
      * @throws \RuntimeException
      */
-    public function getBaseTerrain($rawTerrain)
+    public function getBaseTerrain($rawTerrain, $allowHidden = false)
     {
         if (strpos($rawTerrain, '^') !== false) {
             $rawTerrain = current(explode('^', $rawTerrain));
         }
-
         
         /* @var $terrain \Webnoth\WML\Element\TerrainType */
         $terrain = $this->get($rawTerrain);
@@ -34,9 +33,9 @@ class TerrainTypes extends ArrayCollection
         
         if ($terrain->offsetExists('default_base')) {
             $rawTerrain = $terrain->offsetGet('default_base');
-        } elseif ($terrain->offsetExists('alias_of')) {
-            $parent = $this->get($terrain->offsetGet('alias_of'));
-            if (!$parent->isHidden()) {
+        } elseif ($terrain->offsetExists('aliasof')) {
+            $parent = $this->get($terrain->offsetGet('aliasof'));
+            if (!$parent->isHidden() || $allowHidden) {
                 $rawTerrain = $parent->getString();
             }
         }

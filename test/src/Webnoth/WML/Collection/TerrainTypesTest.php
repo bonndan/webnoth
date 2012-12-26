@@ -21,11 +21,11 @@ class TerrainTypesTest extends \PHPUnit_Framework_TestCase
     {
         $gg = new \Webnoth\WML\Element\TerrainType();
         $gg->offsetSet('string', 'Gg');
-        $gg->offsetSet('alias_of', 'Gt');
+        $gg->offsetSet('aliasof', 'Gt');
         
         $gb = new \Webnoth\WML\Element\TerrainType();
         $gb->offsetSet('string', 'Gx');
-        $gb->offsetSet('alias_of', 'xx');
+        $gb->offsetSet('aliasof', 'xx');
         $gb->offsetSet('default_base', 'Gt');
         
         $gt = new \Webnoth\WML\Element\TerrainType();
@@ -33,7 +33,7 @@ class TerrainTypesTest extends \PHPUnit_Framework_TestCase
         
         $parentHidden = new \Webnoth\WML\Element\TerrainType();
         $parentHidden->offsetSet('string', 'Ph');
-        $parentHidden->offsetSet('alias_of', 'Gh');
+        $parentHidden->offsetSet('aliasof', 'Gh');
         
         $hidden = new \Webnoth\WML\Element\TerrainType();
         $hidden->offsetSet('string', 'Gh');
