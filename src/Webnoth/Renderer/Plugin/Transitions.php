@@ -112,8 +112,8 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     }
     
     /**
-     * Returns an array of baseTerrains values by direction where the base terrain
-     * differs from the current terrain
+     * Returns an array of terrain by direction 
+     * where the base terrain differs from the current base terrain
      * 
      * @param array  $surrounding
      * @param string $currentTerrain
