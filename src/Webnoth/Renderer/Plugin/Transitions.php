@@ -82,7 +82,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
             
             $directions  = $this->getDifferencesFilteredBy($checkAgainst, $diffsByDirection);
             if ($merged) {
-                $mergedTrans = $this->getMergedTransitionsFor($checkAgainst, $directions, $merged);
+                $mergedTrans = $this->getMergedTransitionsFor($directions);
             } else {
                 $mergedTrans = $this->getSeparateTransitionsFor($directions);
             }
@@ -159,6 +159,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      * Returns an array of transitions images for each direction.
      * 
      * @param array $terrainDirections
+     * @return array
      */
     protected function getSeparateTransitionsFor(array $terrainDirections)
     {
@@ -184,12 +185,12 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     
     /**
      * The merged transitions consist of clusters, i.e. each cluster is made
-     * of continues transitions without breaks
+     * of continuous transitions without breaks
      * 
-     * @param string $terrain
-     * @param array  $directions
+     * @param array $directions
+     * @return array
      */
-    protected function getMergedTransitionsFor($terrain, array $directions)
+    protected function getMergedTransitionsFor(array $directions)
     {
         $transitions = array();
         $tmp         = array();
@@ -210,6 +211,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
                 $tmp = array();
             }
         }
+        
         if (!empty($tmp)) {
             $transitions[] = $image . '-' . implode('-', $tmp);
         }
