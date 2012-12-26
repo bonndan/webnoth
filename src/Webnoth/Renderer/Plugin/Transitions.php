@@ -22,102 +22,19 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      * clockwise rotation for traversing surrounding tiles
      * @var array
      */
-    protected $rotation = array('ne', 'se', 's', 'sw', 'nw', 'n');
+    protected $rotation = array('n', 'ne', 'se', 's', 'sw', 'nw');
     
     /**
-     * preliminary transition rules
-     * @var array currentTerrain => checkAgainstTerrain[]
+     * terrain transition rules
+     * @var array
      */
-    protected $transitions = array(
-        'Aa' => array(
-            'Ai'
-        ),
-        
-        //grassland
-        'Gt' => array(
-            'Aa',
-            'Fp',
-            array('Ss', false, false),
-            array('Hh', false, false),
-            'Mm',
-            'Gs',
-            'Ql',
-            'Rr',
-            'Ds'
-        ),
-
-        //medium shallow water
-        'Ww' => array(
-            'Mm',
-            array('Wo', false, false),
-            array('Gg', false, false),
-            'Gs',
-            'Aa',
-            'Ds',
-            array('Hh', false, false),
-            'Rr',
-            'Ss',
-            'Ql',
-            'Ai'
-        ),
-        
-        //hills
-        'Hh' => array(
-            'Aa',
-            'Ds',
-            'Ql',
-            'Gg',
-        ),
-
-        //ocean
-        'Wo' => array(
-            array('Gg', false, false),
-            array('Hh', false, false),
-            'Gs',
-            'Ds',
-            'Ss',
-            'Ai'
-        ),
-        
-        //regular dirt
-        'Re' => array(
-            array('Gg', false, false),
-            array('Ww', 'Gg', false),
-            array('Wo', 'Gg', false),
-            'Rr'
-        ),
-
-        //road
-        'Rr' => array(
-            'Ds'
-        ),
-
-        //forest
-        '^Fp' => array(
-            'Hh',
-            array('Ww', 'Gg'),//coast->grass
-            'Ss'
-        ),
-
-        //Mountains
-        'Mm' => array(
-            'Ql'
-        )
-    );
+    protected $transitions = null;
     
     /**
      * filters for tile naming
      * @var array
      */
-    protected $tileNameFilters = array(
-        'Ww' => array(
-            'ocean-tile' => 'ocean-long-A01',
-            'water/coast-tile' => 'water/coast-tropical-A01'
-        ),
-        'Gg' => array(
-            'water/coast-tile' => 'sand/beach'
-        )
-    );
+    protected $tileImageFilters = null;
 
     /**
      * Initialize the renderer with the available terrains.
@@ -127,6 +44,8 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     public function __construct(TerrainTypes $terrainTypes)
     {
         $this->terrainTypes = $terrainTypes;
+        $this->transitions  = include APPLICATION_PATH . '/config/transitions.php';
+        $this->tileImageFilters  = include APPLICATION_PATH . '/config/tileimagefilters.php';
     }
 
     /**
@@ -142,25 +61,33 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     {
         $surrounding        = $this->map->getSurroundingTerrains($column, $row);
         $currentTerrain     = $this->map->getTerrainAt($column, $row);
-        $currentBaseTerrain = $this->terrainTypes->getBaseTerrain($currentTerrain);
-
-        $transitionsToCheck = $this->getTransitionsToCheck($currentBaseTerrain);
+        $currentBaseTerrain = $this->terrainTypes->getBaseTerrain($currentTerrain, true);
+        $diffsByDirection   = $this->getDifferencesByDirection($surrounding, $currentTerrain);
         
-        foreach ($transitionsToCheck as $transition) {
-            $terrain         = $currentBaseTerrain;
+        //iterate the different terrain types, creates transitions per terrain
+        $terrainsToCheck = $this->getTerrainsToCheck($currentBaseTerrain);
+        foreach ($terrainsToCheck as $settings) {
+            $terrain         = $currentTerrain;
             $merged          = true;
-            $checkAgainst    = $transition;
+            $checkAgainst    = $settings;
             
-            if (is_array($transition)) {
-                $checkAgainst     = $transition[0];
-                $pretendedTerrain = $transition[1];
-                $merged           = $transition[2];
+            if (is_array($settings)) {
+                $checkAgainst     = $settings[0];
+                $pretendedTerrain = $settings[1];
+                $merged           = $settings[2];
                 if ($pretendedTerrain != false) {
                     $terrain = $pretendedTerrain;
                 }
             }
             
-            $tileStack += $this->getTerrainTransitions($surrounding, $terrain, $checkAgainst, $merged);
+            $directions  = $this->getDifferencesFilteredBy($checkAgainst, $diffsByDirection);
+            if ($merged) {
+                $mergedTrans = $this->getMergedTransitionsFor($checkAgainst, $directions, $merged);
+            } else {
+                $mergedTrans = $this->getSeparateTransitionsFor($directions);
+            }
+            $transitions = $this->filterTransitions($mergedTrans, $currentBaseTerrain);
+            $tileStack = array_merge($tileStack, $transitions);
         }
     }
 
@@ -170,7 +97,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      * @param string $baseTerrain
      * @return array(string|array)
      */
-    protected function getTransitionsToCheck($baseTerrain)
+    protected function getTerrainsToCheck($baseTerrain)
     {
         if (isset($this->transitions[$baseTerrain])) {
             $checkAgainst = $this->transitions[$baseTerrain];
@@ -185,84 +112,151 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     }
     
     /**
-     * add string indicators which build the css classes
+     * Returns an array of baseTerrains values by direction where the base terrain
+     * differs from the current terrain
      * 
-     * @param array   $surrounding    surrounding tiles
-     * @param string  $currentTerrain current terrain
-     * @param boolean $merged
-     * @return array
+     * @param array  $surrounding
+     * @param string $currentTerrain
+     * @return array (direction => terrain|false)
      */
-    public function getTerrainTransitions(array $surrounding, $currentTerrain, $merged = true)
+    protected function getDifferencesByDirection(array $surrounding, $currentTerrain)
     {
-        $currentTerrainImage = $this->terrainTypes->get($currentTerrain)->getSymbolImage();
-        $transitions = array();
-        
-        /* true where terrain different */
-        $hasTransition = array();
+        $transitionsByDirection = array();
+        $currentBase            = $this->terrainTypes->getBaseTerrain($currentTerrain, true);
         foreach ($this->rotation as $direction) {
-            $baseTerrain = $this->terrainTypes->getBaseTerrain($surrounding[$direction]);
-            $hasTransition[$direction] = ($baseTerrain != $currentTerrain);
-        }
-
-        /*  no different terrain around */
-        if (!in_array(true, $hasTransition)) {
-            return $transitions;
-        }
-
-        /* separate files */
-        if ($merged != true) {
-            foreach ($hasTransition as $direction => $set) {
-                if ($set)
-                    $transitions[] = $currentTerrainImage . '-' . $direction;
-            }
-            return $this->filterTransitions($transitions, $currentTerrain);
-        }
-
-        $cluster = array();
-        $p = 0;
-        //merge if "ne" and "n" have transitions
-        $mergeFirstLast = ($hasTransition[$this->rotation[0]] && $hasTransition[$this->rotation[5]]);
-
-        foreach ($this->rotation as $direction) {
-            if (!$hasTransition[$direction])
-                $p++;
-            else
-                $cluster[$p][] = $direction;
-        }
-
-        //merge if the last in rotation is different
-        // but not if just the last in rotation is different
-        if ($mergeFirstLast && $p < 5) {
-            //find first with different and merge with last
-            for ($i = 0; $i <= $p; $i++)
-                if (count($cluster[$p]) > 0) {
-                    $first = $i;
-                    break;
-                }
-            $cluster[$first] = array_merge($cluster[$first], $cluster[$p]);
-            unset($cluster[$p]);
-        }
-
-        //one div for each cluster
-        foreach ($cluster as $c) {
-            $transitions[] = $currentTerrainImage . '-' . implode('-', $c);
+            $directionBase = $this->terrainTypes->getBaseTerrain($surrounding[$direction], true);
+            $transitionsByDirection[$direction] = ($directionBase != $currentBase) ? $surrounding[$direction] : null;
         }
         
-        return $this->filterTransitions($transitions, $currentTerrain);
+        return $transitionsByDirection;
     }
     
     /**
+     * Returns an array of directions where transitions for the checked terrain
+     * type occur.
+     * 
+     * @param string $checkedTerrain
+     * @param array  $diffByDirection
+     * @return array(direction)
+     */
+    protected function getDifferencesFilteredBy($checkedTerrain, array $diffByDirection)
+    {
+        $checkedBase = $this->terrainTypes->getBaseTerrain($checkedTerrain, true);
+        foreach ($diffByDirection as $key => $terrain) {
+            if ($terrain == null) {
+                continue;
+            }
+            $dirBase = $this->terrainTypes->getBaseTerrain($terrain, true);
+            if ($checkedBase != $dirBase) {
+                $diffByDirection[$key] = null;
+            }
+        };
+        
+        return $diffByDirection;
+    }
+    
+    /**
+     * Returns an array of transitions images for each direction.
+     * 
+     * @param array $terrainDirections
+     */
+    protected function getSeparateTransitionsFor(array $terrainDirections)
+    {
+        $transitions = array();
+        $image       = null;
+        foreach ($this->rotation as $direction) {
+            $terrain = $terrainDirections[$direction];
+            if ($terrain == null) {
+                continue;
+            }
+            
+            //no need to request every time, all terrains the same
+            if ($image === null) {
+                $dirTerrainType = $this->getBaseTerrainIfNotHidden($terrain);
+                $image = $dirTerrainType->getSymbolImage();
+            }
+
+            $transitions[] = $image . '-' . $direction;
+        }
+        
+        return $transitions;
+    }
+    
+    /**
+     * The merged transitions consist of clusters, i.e. each cluster is made
+     * of continues transitions without breaks
+     * 
+     * @param string $terrain
+     * @param array  $directions
+     */
+    protected function getMergedTransitionsFor($terrain, array $directions)
+    {
+        $transitions = array();
+        $tmp         = array();
+        $image       = null;
+        foreach ($this->rotation as $direction) {
+            $terrain = $directions[$direction];
+            if ($terrain != null) {
+                //no need to request every time, all terrains the same
+                if ($image === null) {
+                    $dirTerrainType = $this->getBaseTerrainIfNotHidden($terrain);
+                    $image = $dirTerrainType->getSymbolImage();
+                }
+                $tmp[] = $direction;
+            } else {
+                if (!empty($tmp)) {
+                    $transitions[] = $image . '-' . implode('-', $tmp);
+                }
+                $tmp = array();
+            }
+        }
+        if (!empty($tmp)) {
+            $transitions[] = $image . '-' . implode('-', $tmp);
+        }
+        
+        return $transitions;
+    }
+    
+    /**
+     * Returns the base TerrainType for a terrain string
+     * 
+     * @param type $terrain
+     * @return \Webnoth\WML\Element\TerrainType
+     * @throws \InvalidArgumentException
+     */
+    protected function getBaseTerrainIfNotHidden($terrain)
+    {
+        $base        = $this->terrainTypes->getBaseTerrain($terrain, true);
+        $baseTerrain = $this->terrainTypes->get($base);
+        
+        if ($baseTerrain == null) {
+            throw new \InvalidArgumentException('The terrain type ' . $terrain . ' could not be found.');
+        }
+        
+        if ($baseTerrain->isHidden()) {
+            $base        = $this->terrainTypes->getBaseTerrain($terrain);
+            $baseTerrain = $this->terrainTypes->get($base);
+        } 
+        
+        return $baseTerrain;
+    }
+    
+    /**
+     * replaces image url where the symbol image is not usable
      * 
      * @param array $transitions
      * @param string $currentTerrain
+     * 
+     * @return array
      */
     protected function filterTransitions(array $transitions, $currentTerrain)
     {
-        if (empty($transitions) || !isset($this->tileNameFilters[$currentTerrain])) {
+        if (empty($transitions)) {
             return $transitions;
         }
         
-        $filters = $this->tileNameFilters[$currentTerrain];
+        $filters = isset($this->tileImageFilters[$currentTerrain]) ? $this->tileImageFilters[$currentTerrain] : array();
+        $filters['void/void-editor'] = 'void/void';
         foreach ($transitions as $key => $transition) {
             $transitions[$key] = str_replace(array_keys($filters), $filters, $transition);
         }
