@@ -31,12 +31,6 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     protected $transitions = null;
     
     /**
-     * filters for tile naming
-     * @var array
-     */
-    protected $tileImageFilters = null;
-
-    /**
      * Initialize the renderer with the available terrains.
      * 
      * @param TerrainTypes $terrainTypes
@@ -45,7 +39,6 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     {
         $this->terrainTypes = $terrainTypes;
         $this->transitions  = include APPLICATION_PATH . '/config/transitions.php';
-        $this->tileImageFilters  = include APPLICATION_PATH . '/config/tileimagefilters.php';
     }
 
     /**
@@ -67,26 +60,22 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
         //iterate the different terrain types, creates transitions per terrain
         $terrainsToCheck = $this->getTerrainsToCheck($currentBaseTerrain);
         foreach ($terrainsToCheck as $settings) {
-            $terrain         = $currentTerrain;
-            $merged          = true;
-            $checkAgainst    = $settings;
+            $merged       = true;
+            $checkAgainst = $settings;
+            $imageBase    = null;
             
             if (is_array($settings)) {
-                $checkAgainst     = $settings[0];
-                $pretendedTerrain = $settings[1];
-                $merged           = $settings[2];
-                if ($pretendedTerrain != false) {
-                    $terrain = $pretendedTerrain;
-                }
+                $checkAgainst = $settings[0];
+                $imageBase    = ($settings[1] !== null) ? $settings[1] : null;
+                $merged       = isset($settings[2]) ? $settings[2] : true;
             }
             
             $directions  = $this->getDifferencesFilteredBy($checkAgainst, $diffsByDirection);
             if ($merged) {
-                $mergedTrans = $this->getMergedTransitionsFor($directions);
+                $transitions = $this->getMergedTransitionsFor($directions, $imageBase);
             } else {
-                $mergedTrans = $this->getSeparateTransitionsFor($directions);
+                $transitions = $this->getSeparateTransitionsFor($directions, $imageBase);
             }
-            $transitions = $this->filterTransitions($mergedTrans, $currentBaseTerrain);
             $tileStack = array_merge($tileStack, $transitions);
         }
     }
@@ -100,15 +89,10 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     protected function getTerrainsToCheck($baseTerrain)
     {
         if (isset($this->transitions[$baseTerrain])) {
-            $checkAgainst = $this->transitions[$baseTerrain];
-        } else {
-            $checkAgainst = array();
-        }
+            return $this->transitions[$baseTerrain];
+        } 
         
-        //alway check against void
-        $checkAgainst[] = array('Xv', false, false);
-        
-        return $checkAgainst;
+        return array();
     }
     
     /**
@@ -159,12 +143,12 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      * Returns an array of transitions images for each direction.
      * 
      * @param array $terrainDirections
+     * @param string $image
      * @return array
      */
-    protected function getSeparateTransitionsFor(array $terrainDirections)
+    protected function getSeparateTransitionsFor(array $terrainDirections, $image = null)
     {
         $transitions = array();
-        $image       = null;
         foreach ($this->rotation as $direction) {
             $terrain = $terrainDirections[$direction];
             if ($terrain == null) {
@@ -172,7 +156,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
             }
             
             //no need to request every time, all terrains the same
-            if ($image === null) {
+            if ($image == null) {
                 $dirTerrainType = $this->getBaseTerrainIfNotHidden($terrain);
                 $image = $dirTerrainType->getSymbolImage();
             }
@@ -187,19 +171,19 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      * The merged transitions consist of clusters, i.e. each cluster is made
      * of continuous transitions without breaks
      * 
-     * @param array $directions
+     * @param array  $directions
+     * @param string $image
      * @return array
      */
-    protected function getMergedTransitionsFor(array $directions)
+    protected function getMergedTransitionsFor(array $directions, $image = null)
     {
         $transitions = array();
         $tmp         = array();
-        $image       = null;
         foreach ($this->rotation as $direction) {
             $terrain = $directions[$direction];
             if ($terrain != null) {
                 //no need to request every time, all terrains the same
-                if ($image === null) {
+                if ($image == null) {
                     $dirTerrainType = $this->getBaseTerrainIfNotHidden($terrain);
                     $image = $dirTerrainType->getSymbolImage();
                 }
@@ -241,28 +225,5 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
         } 
         
         return $baseTerrain;
-    }
-    
-    /**
-     * replaces image url where the symbol image is not usable
-     * 
-     * @param array $transitions
-     * @param string $currentTerrain
-     * 
-     * @return array
-     */
-    protected function filterTransitions(array $transitions, $currentTerrain)
-    {
-        if (empty($transitions)) {
-            return $transitions;
-        }
-        
-        $filters = isset($this->tileImageFilters[$currentTerrain]) ? $this->tileImageFilters[$currentTerrain] : array();
-        $filters['void/void-editor'] = 'void/void';
-        foreach ($transitions as $key => $transition) {
-            $transitions[$key] = str_replace(array_keys($filters), $filters, $transition);
-        }
-        
-        return $transitions;
     }
 }

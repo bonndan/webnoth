@@ -129,7 +129,12 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
         
         $void = new \Webnoth\WML\Element\TerrainType();
         $void->offsetSet('string', 'Xv');
-        $void->offsetSet('symbol_image', 'xxx');
+        $void->offsetSet('symbol_image', 'void/void');
+        $void->offsetSet('aliasof', 'Xt');
+        
+        $voidT = new \Webnoth\WML\Element\TerrainType();
+        $voidT->offsetSet('string', 'Xt');
+        $voidT->offsetSet('symbol_image', 'xxx');
         
         $tropicalWater = new \Webnoth\WML\Element\TerrainType();
         $tropicalWater->offsetSet('string', 'Wwt');
@@ -148,6 +153,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
             $desert->getString()        => $desert,
             $hills->getString()         => $hills,
             $void->getString()          => $void,
+            $voidT->getString()         => $voidT,
         );
         return new \Webnoth\WML\Collection\TerrainTypes($elements);
     }

@@ -7,20 +7,21 @@ return array(
     //grassland
     'Gt' => array(
         'Aa',
-        array('Ss', false, false),
-        array('Hh', false, false),
+        array('Ss', null, false),
+        array('Hh', null, false),
         'Mm',
         'Gs',
         'Ql',
         'Rr',
         'Ds',
-        'Ww',
+        array('Ww', 'sand/beach', true),
+        array('Xt', 'void/void', false),
     ),
     //medium shallow water
     'Ww' => array(
         //'Mm',
-        array('Wo', false, false),
-        array('Gt', false, true),
+        array('Wo', 'water/ocean-A01', true),
+        array('Gt', 'sand/beach', true),
         //'Aa',
         //'Ds',
         //array('Hh', false, false),
@@ -28,6 +29,7 @@ return array(
       'Ss',
       'Ql',
       'Ai' */
+        array('Xt', 'void/void', false),
     ),
     //hills
     'Hh' => array(
@@ -38,17 +40,18 @@ return array(
     ),
     //ocean
     'Wo' => array(
-        array('Gg', false, false),
-        array('Hh', false, false),
+        array('Gt', 'sand/beach', false),
+        array('Hh', null, false),
         'Gs',
         'Ds',
         'Ss',
         'Ai',
-        array('Ww', false, false),
+        array('Ww', 'water/ocean-A02', false),
+        array('Xt', 'void/void', false),
     ),
     //regular dirt
     'Re' => array(
-        array('Gg', false, false),
+        array('Gt', null, false),
         array('Ww', 'Gg', false),
         array('Wo', 'Gg', false),
         'Rr'
