@@ -1,5 +1,5 @@
 <?php
-namespace Webnoth\Renderer\Plugin;
+namespace Webnoth\WML;
 
 require __DIR__ . '/bootstrap.php';
 
@@ -13,7 +13,7 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * system under test
-     * @var Separator 
+     * @var TerrainSeparator 
      */
     protected $separator;
     
@@ -25,7 +25,7 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->separator = new Separator();
+        $this->separator = new TerrainSeparator();
         $this->map = $this->getMockBuilder("\Webnoth\WML\Element\Map")
             ->disableOriginalConstructor()
             ->getMock();
@@ -44,30 +44,27 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
     public function testStackIsNotModified()
     {
         $this->map->expects($this->once())
-            ->method('setHeightAt');
+            ->method('setHeightAt')
+            ->with(1, 2, 0.2);
         $this->map->expects($this->once())
-            ->method('setTerrainAt');
+            ->method('setTerrainAt')
+            ->with(1, 2, 'Gg');
         $this->map->expects($this->once())
-            ->method('setOverlayAt');
-        $stack = array('Gg', 'Ww');
-        $this->separator->getTileTerrains($stack, 0, 0);
-        $this->assertEquals(array('Gg', 'Ww'), $stack);
+            ->method('setOverlayAt')
+            ->with(1, 2, null);
+
+        $this->separator->processRawTerrain(1, 2, 'Gg');
     }
     
     /**
      * Ensures a multi terrain is split
      */
-    public function testStackIsModified()
+    public function testOverlayIsFound()
     {
         $this->map->expects($this->once())
-            ->method('setHeightAt');
-        $this->map->expects($this->once())
-            ->method('setTerrainAt');
-        $this->map->expects($this->once())
-            ->method('setOverlayAt');
+            ->method('setOverlayAt')
+            ->with(1, 2, '^Fsd');
         
-        $stack = array('Gg^Fsd', 'anything', 'else');
-        $this->separator->getTileTerrains($stack, 0, 0);
-        $this->assertEquals(array('Gg', 'anything', 'else'), $stack);
+        $this->separator->processRawTerrain(1, 2, 'Gg^Fsd');
     }
 }

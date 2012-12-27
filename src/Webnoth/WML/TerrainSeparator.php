@@ -1,14 +1,14 @@
 <?php
 
-namespace Webnoth\Renderer\Plugin;
+namespace Webnoth\WML;
 
 /**
- * Default plugin: Handles "Gg^Fsd" like terrains.
+ * Plugin for the map which handles "Gg^Fsd" like terrains.
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class Separator extends Base implements \Webnoth\Renderer\Plugin
+class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
 {
     const WATER_HEIGHT     = 0.0;
     const FLAT_HEIGHT      = 0.2;
@@ -16,17 +16,15 @@ class Separator extends Base implements \Webnoth\Renderer\Plugin
     const MOUNTAIN_HEIGHT  = 3;
     
     /**
-     * Modifies the stack. If the lowest terrain has an overlay, the overlay is removed.
+     * Processes raw terrain input.
      * 
      * @param array $tileStack
      * @param int   $column
      * @param int   $row
      */
-    public function getTileTerrains(array &$tileStack, $column, $row)
+    public function processRawTerrain($column, $row, $rawTerrain)
     {
-        $first     = $tileStack[0];
-        $separated = $this->separateRawTerrain($first);
-        $tileStack[0] = $separated['terrain'];
+        $separated = $this->separateRawTerrain($rawTerrain);
         $this->map->setHeightAt($column,  $row, $separated['height']);
         $this->map->setTerrainAt($column, $row, $separated['terrain']);
         $this->map->setOverlayAt($column, $row, $separated['overlay']);
