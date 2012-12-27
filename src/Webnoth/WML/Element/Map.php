@@ -19,7 +19,7 @@ class Map extends Element
     
     /**
      * array of arrays referring terrain types
-     * @var array
+     * @var array y => x
      */
     protected $terrains = array();
     
@@ -199,7 +199,7 @@ class Map extends Element
      */
     public function setTerrainAt($column, $row, $terrain)
     {
-        $this->terrains[$column][$row] = $terrain;
+        $this->terrains[$row][$column] = $terrain;
     }
     
     /**
@@ -211,7 +211,7 @@ class Map extends Element
      */
     public function setHeightAt($column, $row, $height)
     {
-        $this->heights[$column][$row] = $height;
+        $this->heights[$row][$column] = $height;
     }
     
     /**
@@ -223,6 +223,6 @@ class Map extends Element
      */
     public function setOverlayAt($column, $row, $terrain)
     {
-        $this->overlays[$column][$row] = $terrain;
+        $this->overlays[$row][$column] = $terrain;
     }
 }
