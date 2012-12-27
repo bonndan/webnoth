@@ -32,13 +32,10 @@ class TerrainTypes extends ArrayCollection
             throw new \RuntimeException('Unknown terrain: ' . $rawTerrain);
         }
         
-        if ($terrain->offsetExists('default_base')) {
-            $rawTerrain = $terrain->offsetGet('default_base');
-        } elseif ($terrain->offsetExists('aliasof')) {
-            $parent = $this->get($terrain->offsetGet('aliasof'));
-            if (!$parent->isHidden() || $allowHidden) {
-                $rawTerrain = $parent->getString();
-            }
+        $baseTerrain = $terrain->getBaseTerrain();
+        $baseTerrainType = $this->get($baseTerrain);
+        if (!$baseTerrainType->isHidden() || $allowHidden) {
+            $rawTerrain = $baseTerrainType->getString();
         }
 
         return $rawTerrain;
