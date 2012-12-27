@@ -9,10 +9,11 @@ use Webnoth\Renderer\Transition;
 return array(
     //grassland
     'Gg' => array(
-        Transition::create($terrainTypes->get('Wo'), array('sand/beach' => 3)), 
-        Transition::create($terrainTypes->get('Xt'), array('void/void' => 1)), 
+        Transition::create($terrainTypes->get('Gs'), array('grass/semi-dry' => 3)), 
     ),
     'Ww' => array(
-        Transition::create($terrainTypes->get('Gt'), array('sand/beach' => 3)), 
+        Transition::create($terrainTypes->get('Gg'), array('flat/bank-to-ice' => 2, 'grass/green' => 2)), 
+        Transition::create($terrainTypes->get('Gs'), array('flat/bank-to-ice' => 2, 'grass/semi-dry-abrupt' => 2)), 
+        Transition::create($terrainTypes->get('Wwf'), array('water/ford' => 1)), 
     ),
 );

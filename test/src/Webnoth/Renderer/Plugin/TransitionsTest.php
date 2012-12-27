@@ -61,9 +61,9 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
         $stack = array();
         $this->plugin->getTileTerrains($stack, 2, 2);
         
-        $this->assertEquals(2, count($stack), var_export($stack, true));
-        $this->assertContains('sand/beach-n', $stack, var_export($stack, true));
-        $this->assertContains('sand/beach-sw-nw', $stack, var_export($stack, true));
+        $this->assertGreaterThan(0, count($stack), var_export($stack, true));
+        $this->assertContains('flat/bank-to-ice-n', $stack, var_export($stack, true));
+        $this->assertContains('flat/bank-to-ice-sw-nw', $stack, var_export($stack, true));
     }
     
     /**
@@ -92,73 +92,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
      */
     protected function createTerrainCollection()
     {
-        $grass = new \Webnoth\WML\Element\TerrainType();
-        $grass->offsetSet('string', 'Gg');
-        $grass->offsetSet('aliasof', 'Gt');
-        $grass->offsetSet('symbol_image', 'grass/green');
-        
-        $grassBase = new \Webnoth\WML\Element\TerrainType();
-        $grassBase->offsetSet('string', 'Gt');
-        $grassBase->offsetSet('symbol_image', 'xxx');
-        $grassBase->offsetSet('hidden', 'yes');
-        
-        $semiDry = new \Webnoth\WML\Element\TerrainType();
-        $semiDry->offsetSet('string', 'Gs');
-        $semiDry->offsetSet('symbol_image', 'grass/semi-dry');
-        $semiDry->offsetSet('aliasof', 'Gt');
-        
-        $aa = new \Webnoth\WML\Element\TerrainType();
-        $aa->offsetSet('string', 'Aa');
-        $aa->offsetSet('symbol_image', 'grass/xxx');
-        
-        $desert = new \Webnoth\WML\Element\TerrainType();
-        $desert->offsetSet('string', 'Ds');
-        $desert->offsetSet('symbol_image', 'sand/desert-tile');
-        
-        $water = new \Webnoth\WML\Element\TerrainType();
-        $water->offsetSet('string', 'Ww');
-        $water->offsetSet('symbol_image', 'water/coast-tile');
-        
-        $ocean = new \Webnoth\WML\Element\TerrainType();
-        $ocean->offsetSet('string', 'Wo');
-        $ocean->offsetSet('symbol_image', 'water/ocean-tile');
-        
-        $mountains = new \Webnoth\WML\Element\TerrainType();
-        $mountains->offsetSet('string', 'Mm');
-        $mountains->offsetSet('symbol_image', 'xxx');
-        
-        $hills = new \Webnoth\WML\Element\TerrainType();
-        $hills->offsetSet('string', 'Hh');
-        $hills->offsetSet('symbol_image', 'xxx');
-        
-        $void = new \Webnoth\WML\Element\TerrainType();
-        $void->offsetSet('string', 'Xv');
-        $void->offsetSet('symbol_image', 'void/void');
-        $void->offsetSet('aliasof', 'Xt');
-        
-        $voidT = new \Webnoth\WML\Element\TerrainType();
-        $voidT->offsetSet('string', 'Xt');
-        $voidT->offsetSet('symbol_image', 'xxx');
-        
-        $tropicalWater = new \Webnoth\WML\Element\TerrainType();
-        $tropicalWater->offsetSet('string', 'Wwt');
-        $tropicalWater->offsetSet('aliasof', 'Ww');
-        $tropicalWater->offsetSet('symbol_image', 'water/coast-tropical-tile');
-        
-        $elements = array(
-            $aa->getString()            => $aa,
-            $grass->getString()         => $grass,
-            $semiDry->getString()            => $semiDry,
-            $grassBase->getString()     => $grassBase,
-            $water->getString()         => $water,
-            $ocean->getString()         => $ocean,
-            $tropicalWater->getString() => $tropicalWater,
-            $mountains->getString()     => $mountains,
-            $desert->getString()        => $desert,
-            $hills->getString()         => $hills,
-            $void->getString()          => $void,
-            $voidT->getString()         => $voidT,
-        );
-        return new \Webnoth\WML\Collection\TerrainTypes($elements);
+        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        return $cache->fetch('terrain');
     }
 }

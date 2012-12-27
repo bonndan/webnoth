@@ -13,8 +13,6 @@ use Webnoth\Renderer\Transition;
  */
 class Transitions extends Base implements \Webnoth\Renderer\Plugin
 {
-    const MAX_MERGED_TRANSITION = 3;
-    
     /**
      * the terrain types
      * @var \Webnoth\WML\Collection\TerrainTypes
@@ -49,10 +47,9 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      */
     public function getTileTerrains(array &$tileStack, $column, $row)
     {
-        $surrounding        = $this->map->getSurroundingTerrains($column, $row, $this->terrainTypes);
-        $currentTerrain     = $this->map->getTerrainAt($column, $row);
-        $currentBaseTerrain = $this->terrainTypes->getBaseTerrain($currentTerrain, true);
-        $transitions        = $this->getTransitionsToCheck($currentBaseTerrain);
+        $surrounding    = $this->map->getSurroundingTerrains($column, $row, $this->terrainTypes);
+        $currentTerrain = $this->map->getTerrainAt($column, $row);
+        $transitions    = $this->getTransitionsToCheck($currentTerrain);
         
         //iterate the different terrain types, creates transitions per terrain
         foreach ($transitions as $transition) {
@@ -65,13 +62,13 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     /**
      * provides the transitions to check against for a specific terrain type
      * 
-     * @param string $baseTerrain
+     * @param string $terrain
      * @return \Webnoth\Renderer\Transition[]
      */
-    protected function getTransitionsToCheck($baseTerrain)
+    protected function getTransitionsToCheck($terrain)
     {
-        if (isset($this->transitions[$baseTerrain])) {
-            return $this->transitions[$baseTerrain];
+        if (isset($this->transitions[$terrain])) {
+            return $this->transitions[$terrain];
         } 
         
         return array();
