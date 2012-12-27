@@ -41,7 +41,8 @@ class Debug extends Base implements \Webnoth\Renderer\Plugin
         $y = ($row) * $this->size + $yOffset;
 
         $terrain = $this->map->getTerrainAt($column, $row);
-        $tileStack[] = $this->getStamp($column . '.' . $row, $terrain);
+        $coords = $column . '.' . $row;
+        $tileStack[] = $this->getStamp($coords, $terrain);
     }
 
     /**
