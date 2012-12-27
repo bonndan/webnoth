@@ -1,73 +1,18 @@
 <?php
 /**
  * preliminary terrain transition rules
- * @var array currentTerrain => checkAgainstTerrain[]
  */
+use Webnoth\Renderer\Transition;
+
+/* @var $terrainTypes \Webnoth\WML\Collection\TerrainTypes */
+
 return array(
     //grassland
-    'Gt' => array(
-        'Aa',
-        array('Ss', null, false),
-        array('Hh', null, false),
-        'Mm',
-        'Gs',
-        'Ql',
-        'Rr',
-        'Ds',
-        array('Ww', 'sand/beach', true),
-        array('Xt', 'void/void', false),
+    'Gg' => array(
+        Transition::create($terrainTypes->get('Wo'), array('sand/beach' => 3)), 
+        Transition::create($terrainTypes->get('Xt'), array('void/void' => 1)), 
     ),
-    //medium shallow water
     'Ww' => array(
-        //'Mm',
-        array('Wo', 'water/ocean-A01', true),
-        array('Gt', 'sand/beach', true),
-        //'Aa',
-        //'Ds',
-        //array('Hh', false, false),
-    /* 'Rr',
-      'Ss',
-      'Ql',
-      'Ai' */
-        array('Xt', 'void/void', false),
+        Transition::create($terrainTypes->get('Gt'), array('sand/beach' => 3)), 
     ),
-    //hills
-    'Hh' => array(
-        'Aa',
-        'Ds',
-        'Ql',
-        'Gg',
-    ),
-    //ocean
-    'Wo' => array(
-        array('Gt', 'sand/beach', false),
-        array('Hh', null, false),
-        'Gs',
-        'Ds',
-        'Ss',
-        'Ai',
-        array('Ww', 'water/ocean-A02', false),
-        array('Xt', 'void/void', false),
-    ),
-    //regular dirt
-    'Re' => array(
-        array('Gt', null, false),
-        array('Ww', 'Gg', false),
-        array('Wo', 'Gg', false),
-        'Rr'
-    ),
-    //road
-    'Rr' => array(
-        'Ds'
-    ),
-    //forest
-    '^Fp' => array(
-        'Hh',
-        array('Ww', 'Gg'), //coast->grass
-        'Ss'
-    ),
-    //Mountains
-    'Mm' => array(
-        'Ql'
-    )
 );

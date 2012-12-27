@@ -70,6 +70,9 @@ class Transition
          * filter, keep only relevant entries
          */
         foreach ($surrounding as $direction => $terrain) {
+            if ($terrain === null) {
+                continue;
+            }
             /* @var $terrain \Webnoth\WML\Element\TerrainType */
             $dirBase = $terrain->getBaseTerrain($terrain);
             

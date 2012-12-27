@@ -72,14 +72,18 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
      */
     protected function createSurroundingTerrainsResult()
     {
-        return array(
-            'n'  => 'Gg',
-            'ne' => 'Ww',
-            'se' => 'Ww',
-            's'  => 'Ww',
-            'sw' => 'Gg',
-            'nw' => 'Gg',
+        $terrains = $this->createTerrainCollection();
+        
+        $data = array(
+            'n'  => $terrains->get('Gg'),
+            'ne' => $terrains->get('Ww'),
+            'se' => $terrains->get('Ww'),
+            's'  => $terrains->get('Ww'),
+            'sw' => $terrains->get('Gg'),
+            'nw' => $terrains->get('Gg'),
         );
+        
+        return new \Webnoth\WML\Collection\TerrainTypes($data);
     }
     
     /**
