@@ -18,6 +18,8 @@ class TerrainType extends Element
      */
     const VOID = 'Xv';
     
+    const ATTR_ALIASOF = 'aliasof';
+    
     /**
      * Returns the string attribute (used in map files)
      * 
@@ -49,5 +51,23 @@ class TerrainType extends Element
     public function isHidden()
     {
         return $this->offsetExists('hidden') && $this->offsetGet('hidden') == 'yes';
+    }
+    
+    /**
+     * Returns the base terrain (string), regardless of its hidden status
+     * 
+     * @return string
+     */
+    public function getBaseTerrain()
+    {
+        if ($this->offsetExists('default_base')) {
+            return $this->offsetGet('default_base');
+        } 
+        
+        if ($this->offsetExists(self::ATTR_ALIASOF)) {
+            return $this->offsetGet(self::ATTR_ALIASOF);
+        }
+        
+        return $this->getString();
     }
 }

@@ -74,4 +74,23 @@ class TerrainTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('water/editor-image', $this->terrain->getSymbolImage());
     }
     
+    public function testGetBaseTerrainWithoutParent()
+    {
+        $this->terrain->offsetSet('string', 'Gg');
+        $this->assertEquals('Gg', $this->terrain->getBaseTerrain());
+    }
+    
+    public function testGetBaseTerrainWithDefaultBase()
+    {
+        $this->terrain->offsetSet('string', 'Gg');
+        $this->terrain->offsetSet('default_base', 'Gt');
+        $this->assertEquals('Gt', $this->terrain->getBaseTerrain());
+    }
+    
+    public function testGetBaseTerrainWithAlias()
+    {
+        $this->terrain->offsetSet('string', 'Gg');
+        $this->terrain->offsetSet(TerrainType::ATTR_ALIASOF, 'Gt');
+        $this->assertEquals('Gt', $this->terrain->getBaseTerrain());
+    }
 }
