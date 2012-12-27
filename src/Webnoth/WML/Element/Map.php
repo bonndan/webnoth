@@ -21,7 +21,19 @@ class Map extends Element
      * array of arrays referring terrain types
      * @var array
      */
-    protected $rows = array();
+    protected $terrains = array();
+    
+    /**
+     * array of arrays referring terrain heights
+     * @var array
+     */
+    protected $heights = array();
+    
+    /**
+     * array of arrays referring terrain overlays / obstacles
+     * @var array
+     */
+    protected $overlays = array();
     
     /**
      * all starting positions of the sides
@@ -44,13 +56,13 @@ class Map extends Element
              */
             if (strpos($rawTile, ' ') !== false) {
                 $parts = explode(' ', $rawTile);
-                $this->startingPositions[$parts[0]] = array(count($this->rows), $key);
+                $this->startingPositions[$parts[0]] = array(count($this->terrains), $key);
                 $rawTile = $parts[1];
             }
             $tiles[$key] = $rawTile;
         }
         
-        $this->rows[] = $tiles;
+        $this->terrains[] = $tiles;
     }
     
     /**
@@ -77,7 +89,7 @@ class Map extends Element
     public function getTiles()
     {
         $tiles = array();
-        foreach ($this->rows as $row) {
+        foreach ($this->terrains as $row) {
             $tiles = array_merge($tiles, $row);
         }
         
@@ -101,7 +113,7 @@ class Map extends Element
      */
     public function getHeight()
     {
-        return count($this->rows);
+        return count($this->terrains);
     }
     
     /**
@@ -172,9 +184,45 @@ class Map extends Element
      */
     public function getTerrainAt($column, $row)
     {
-        if (!isset($this->rows[$row][$column])) {
+        if (!isset($this->terrains[$row][$column])) {
             return TerrainType::VOID;
         }
-        return $this->rows[$row][$column];
+        return $this->terrains[$row][$column];
+    }
+    
+    /**
+     * Set a specific terrain at a coordinate.
+     * 
+     * @param int    $column
+     * @param int    $row
+     * @param string $terrain
+     */
+    public function setTerrainAt($column, $row, $terrain)
+    {
+        $this->terrains[$column][$row] = $terrain;
+    }
+    
+    /**
+     * Set a value to the height map.
+     * 
+     * @param int   $column
+     * @param int   $row
+     * @param float $height
+     */
+    public function setHeightAt($column, $row, $height)
+    {
+        $this->heights[$column][$row] = $height;
+    }
+    
+    /**
+     * Set a value to the overlay map.
+     * 
+     * @param int   $column
+     * @param int   $row
+     * @param float $terrain
+     */
+    public function setOverlayAt($column, $row, $terrain)
+    {
+        $this->overlays[$column][$row] = $terrain;
     }
 }

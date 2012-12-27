@@ -224,4 +224,31 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(8, count($tiles));
         $this->assertEquals(array_merge($row,$row2), $tiles);
     }
+    
+    /**
+     * Ensures terrains can be set to the heightmap.
+     */
+    public function testSetTerrain()
+    {
+        $this->map->setTerrainAt(1, 1, 'Gg');
+        $this->assertAttributeEquals(array(1 => array(1 => 'Gg')), 'terrains', $this->map);
+    }
+    
+    /**
+     * Ensures heights can be set to the heightmap.
+     */
+    public function testSetHeight()
+    {
+        $this->map->setHeightAt(1, 1, 2);
+        $this->assertAttributeEquals(array(1 => array(1 => 2)), 'heights', $this->map);
+    }
+    
+    /**
+     * Ensures overlays can be set to the heightmap.
+     */
+    public function testSetOverlay()
+    {
+        $this->map->setOverlayAt(1, 1, '^Fsd');
+        $this->assertAttributeEquals(array(1 => array(1 => '^Fsd')), 'overlays', $this->map);
+    }
 }
