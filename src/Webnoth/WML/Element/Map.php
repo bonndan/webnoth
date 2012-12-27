@@ -12,6 +12,12 @@ use \Webnoth\WML\Collection\TerrainTypes;
 class Map extends Element
 {
     /**
+     * raw terrain splitter
+     * @var \Webnoth\WML\TerrainSeparator
+     */
+    protected $separator = null;
+    
+    /**
      * width in tiles
      * @var int
      */
@@ -40,7 +46,33 @@ class Map extends Element
      * @var array (tilenumber => position)
      */
     protected $startingPositions = array();
+    
+    /**
+     * Pass the separator as raw terrain splitter.
+     * 
+     * @param \Webnoth\WML\TerrainSeparator $separator
+     */
+    public function setSeparator(\Webnoth\WML\TerrainSeparator $separator)
+    {
+        $this->separator = $separator;
+        $this->separator->setMap($this);
+    }
+    
+    /**
+     * Returns the terrain separator.
+     * 
+     * @return \Webnoth\WML\TerrainSeparator
+     */
+    protected function getSeparator()
+    {
+        if ($this->separator === null) {
+            $this->separator = new \Webnoth\WML\TerrainSeparator();
+            $this->separator->setMap($this);
+        }
         
+        return $this->separator;
+    }
+    
     /**
      * adds a row of tiles (terrain type strings)
      * 
@@ -49,20 +81,12 @@ class Map extends Element
     public function addRawTileRow(array $tiles)
     {
         $this->setWidth(count($tiles));
+        $column = 0;
+        $row = count($this->terrains);
         foreach ($tiles as $key => $rawTile) {
-            
-            /*
-             * starting positions are noted like "... GG, 3 Ke, Gg, ..."
-             */
-            if (strpos($rawTile, ' ') !== false) {
-                $parts = explode(' ', $rawTile);
-                $this->startingPositions[$parts[0]] = array(count($this->terrains), $key);
-                $rawTile = $parts[1];
-            }
-            $tiles[$key] = $rawTile;
+            $this->getSeparator()->processRawTerrain($column, $row, $rawTile);
+            $column++;
         }
-        
-        $this->terrains[] = $tiles;
     }
     
     /**
@@ -224,5 +248,17 @@ class Map extends Element
     public function setOverlayAt($column, $row, $terrain)
     {
         $this->overlays[$row][$column] = $terrain;
+    }
+    
+    /**
+     * Set a starting position
+     * 
+     * @param int   $column
+     * @param int   $row
+     * @param float $terrain
+     */
+    public function setStartingPosition($column, $row, $number)
+    {
+        $this->startingPositions[$number] = array($row, $column);
     }
 }

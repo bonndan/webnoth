@@ -180,6 +180,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $collection = $collection->toArray();
         foreach ($expected as $key => $value) {
             $this->assertArrayHasKey($key, $collection);
+            $this->assertInstanceOf("\Webnoth\WML\Element\TerrainType", $collection[$key]);
             $this->assertEquals($value, $collection[$key]->getString());
         }
     }
@@ -250,5 +251,14 @@ class MapTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->setOverlayAt(1, 1, '^Fsd');
         $this->assertAttributeEquals(array(1 => array(1 => '^Fsd')), 'overlays', $this->map);
+    }
+    
+    /**
+     * Ensures starting postions are stored properly
+     */
+    public function testSetStartingPostion()
+    {
+        $this->map->setStartingPosition(12, 13, 3);
+        $this->assertAttributeEquals(array(3 => array(13, 12)), 'startingPositions', $this->map);
     }
 }
