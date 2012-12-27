@@ -130,8 +130,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $row = array('03', '13', '23', '33');
         $this->map->addRawTileRow($row);
         
-        $surrounding = $this->map->getSurroundingTerrains(2, 2);
-        $this->assertInternalType('array', $surrounding);
+        $surrounding = $this->map->getSurroundingTerrains(2, 2, $this->createFakeTerrainLookup($this->map));
+        $this->assertInstanceOf("\Webnoth\WML\Collection\TerrainTypes", $surrounding);
         $expected = array(
             'ne' => '31',
             'se' => '32',
@@ -140,7 +140,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'nw' => '11',
             'n'  => '21'
         );
-        $this->assertEquals($expected, $surrounding);
+        $this->assertCollectionEquals($expected, $surrounding);
     }
     
     /**
@@ -156,9 +156,9 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map->addRawTileRow($row);
         $row = array('03', '13', '23', '33');
         $this->map->addRawTileRow($row);
-        
-        $surrounding = $this->map->getSurroundingTerrains(1, 1);
-        $this->assertInternalType('array', $surrounding);
+        $this->map->getTiles();
+        $surrounding = $this->map->getSurroundingTerrains(1, 1, $this->createFakeTerrainLookup($this->map));
+        $this->assertInstanceOf("\Webnoth\WML\Collection\TerrainTypes", $surrounding);
         $expected = array(
             'ne' => '21',
             'se' => '22',
@@ -167,7 +167,37 @@ class MapTest extends \PHPUnit_Framework_TestCase
             'nw' => '01',
             'n'  => '10'
         );
-        $this->assertEquals($expected, $surrounding);
+        $this->assertCollectionEquals($expected, $surrounding);
+    }
+    
+    /**
+     * assert a terraintype collection matches the given strings
+     * @param type $expected
+     * @param \Webnoth\WML\Collection\TerrainTypes $collection
+     */
+    protected function assertCollectionEquals($expected, \Webnoth\WML\Collection\TerrainTypes $collection)
+    {
+        $collection = $collection->toArray();
+        foreach ($expected as $key => $value) {
+            $this->assertArrayHasKey($key, $collection);
+            $this->assertEquals($value, $collection[$key]->getString());
+        }
+    }
+    
+    /**
+     * creates a fake terrain lookup collection
+     * 
+     * @param \Webnoth\WML\Element\Map $map
+     * @return \Webnoth\WML\Collection\TerrainTypes
+     */
+    protected function createFakeTerrainLookup(Map $map)
+    {
+        $collection = new \Webnoth\WML\Collection\TerrainTypes();
+        foreach ($map->getTiles() as $terrain) {
+            $collection->set($terrain, new \Webnoth\WML\Element\TerrainType($terrain));
+        }
+        
+        return $collection;
     }
     
     /**

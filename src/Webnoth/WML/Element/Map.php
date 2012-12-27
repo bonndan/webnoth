@@ -1,7 +1,8 @@
 <?php
 
 namespace Webnoth\WML\Element;
-use Webnoth\WML\Element;
+use \Webnoth\WML\Element;
+use \Webnoth\WML\Collection\TerrainTypes;
 
 /**
  * Element containing map data
@@ -117,13 +118,14 @@ class Map extends Element
 	 * 
      * @param int $column
      * @param int $row
-	 * @return array
+     * @param \Webnoth\WML\Collection\TerrainTypes $terrains
+	 * @return \Webnoth\WML\Collection\TerrainTypes
      * @link http://wiki.wesnoth.org/TerrainGraphicsTutorial#The_hex_coordinate_system
 	 */
-    public function getSurroundingTerrains($column, $row)
+    public function getSurroundingTerrains($column, $row, TerrainTypes $terrains)
     {
-		if($column%2) {//odd column
-			return array(
+		if ($column%2) {//odd column
+			$surrounding = array(
 				'ne' => $this->getTerrainAt($column+1, $row),
 				'se' => $this->getTerrainAt($column+1, $row+1),
 				's'  => $this->getTerrainAt($column,   $row+1),
@@ -132,7 +134,7 @@ class Map extends Element
 				'n'  => $this->getTerrainAt($column,   $row-1)
 			);
         } else {
-			return array(
+			$surrounding = array(
 				'ne' => $this->getTerrainAt($column+1, $row-1),
 				'se' => $this->getTerrainAt($column+1, $row),
 				's'  => $this->getTerrainAt($column,   $row+1),
@@ -141,6 +143,24 @@ class Map extends Element
 				'n'  => $this->getTerrainAt($column,   $row-1)
 			);
         }
+        
+        return $this->toTerrainTypeCollection($surrounding, $terrains);
+    }
+    
+    /**
+     * Converts an terrain string array into a terraintype collection.
+     * 
+     * @param array $collection
+     * @param \Webnoth\WML\Collection\TerrainTypes $terrains
+     * @return \Webnoth\WML\Collection\TerrainTypes
+     */
+    protected function toTerrainTypeCollection(array $collection, TerrainTypes $terrains)
+    {
+        foreach ($collection as $key => $terrain) {
+            $collection[$key] = $terrains->get($terrain);
+        }
+            
+        return new \Webnoth\WML\Collection\TerrainTypes($collection);
     }
     
     /**
