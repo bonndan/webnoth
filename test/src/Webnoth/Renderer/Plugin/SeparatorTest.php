@@ -17,9 +17,19 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
      */
     protected $separator;
     
+    /**
+     * map mock
+     * @var \Webnoth\WML\Element\Map 
+     */
+    protected $map;
+    
     public function setUp()
     {
         $this->separator = new Separator();
+        $this->map = $this->getMockBuilder("\Webnoth\WML\Element\Map")
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->separator->setMap($this->map);
     }
     
     public function tearDown()
@@ -33,6 +43,12 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testStackIsNotModified()
     {
+        $this->map->expects($this->once())
+            ->method('setHeightAt');
+        $this->map->expects($this->once())
+            ->method('setTerrainAt');
+        $this->map->expects($this->once())
+            ->method('setOverlayAt');
         $stack = array('Gg', 'Ww');
         $this->separator->getTileTerrains($stack, 0, 0);
         $this->assertEquals(array('Gg', 'Ww'), $stack);
@@ -43,8 +59,15 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testStackIsModified()
     {
-        $stack = array('Gg^Fsd', 'Ww', 'Ww^Fsd');
+        $this->map->expects($this->once())
+            ->method('setHeightAt');
+        $this->map->expects($this->once())
+            ->method('setTerrainAt');
+        $this->map->expects($this->once())
+            ->method('setOverlayAt');
+        
+        $stack = array('Gg^Fsd', 'anything', 'else');
         $this->separator->getTileTerrains($stack, 0, 0);
-        $this->assertEquals(array('Gg', '^Fsd', 'Ww', 'Ww', '^Fsd'), $stack);
+        $this->assertEquals(array('Gg', 'anything', 'else'), $stack);
     }
 }
