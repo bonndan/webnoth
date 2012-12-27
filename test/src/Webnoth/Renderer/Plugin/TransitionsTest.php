@@ -19,7 +19,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $terrainTypes = $this->createTerrainCollection();
+        $terrainTypes = $this->getTerrainCollection();
         $this->plugin = new Transitions($terrainTypes);
     }
     
@@ -38,8 +38,6 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
         $this->plugin->setMap($map);
         $this->assertAttributeEquals($map, 'map', $this->plugin);
     }
-    
-    
     
     /**
      * 
@@ -67,22 +65,63 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * a specific water to semi-dry grass test
+     */
+    public function testWwGsTransition()
+    {
+        $directions = array(
+                'n'  => 'Gs',
+                'ne' => 'Gs',
+                'se' => 'Gs',
+                's'  => 'Ww',
+                'sw' => 'Ww',
+                'nw' => 'Gs',
+            );
+        
+        $map = $this->getMock("\Webnoth\WML\Element\Map");
+        $map->expects($this->once())
+            ->method('getSurroundingTerrains')
+            ->with(2, 2)
+            ->will($this->returnValue($this->createSurroundingTerrainsResult($directions)));
+        $map->expects($this->once())
+            ->method('getTerrainAt')
+            ->with(2, 2)
+            ->will($this->returnValue('Ww'));
+        
+        $this->plugin->setMap($map);
+        
+        $stack = array();
+        $this->plugin->getTileTerrains($stack, 2, 2);
+        
+        $this->assertGreaterThan(0, count($stack), var_export($stack, true));
+        $this->assertContains('flat/bank-to-ice-n-ne', $stack, var_export($stack, true));
+        $this->assertContains('flat/bank-to-ice-se', $stack, var_export($stack, true));
+        $this->assertContains('flat/bank-to-ice-nw', $stack, var_export($stack, true));
+    }
+    
+    /**
      * fake a surrounding terrains reult
      * @return array
      */
-    protected function createSurroundingTerrainsResult()
+    protected function createSurroundingTerrainsResult(array $directions = null)
     {
-        $terrains = $this->createTerrainCollection();
+        $terrains = $this->getTerrainCollection();
         
-        $data = array(
-            'n'  => $terrains->get('Gg'),
-            'ne' => $terrains->get('Ww'),
-            'se' => $terrains->get('Ww'),
-            's'  => $terrains->get('Ww'),
-            'sw' => $terrains->get('Gg'),
-            'nw' => $terrains->get('Gg'),
-        );
+        if ($directions === null) {
+            $directions = array(
+                'n'  => 'Gg',
+                'ne' => 'Ww',
+                'se' => 'Ww',
+                's'  => 'Ww',
+                'sw' => 'Gg',
+                'nw' => 'Gg',
+            );
+        }
         
+        $data = array();
+        foreach ($directions as $dir => $terrain) {
+            $data[$dir] = $terrains->get($terrain);
+        }
         return new \Webnoth\WML\Collection\TerrainTypes($data);
     }
     
@@ -90,7 +129,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
      * creates a fake terrain collection
      * @return \Webnoth\WML\Collection\TerrainTypes
      */
-    protected function createTerrainCollection()
+    protected function getTerrainCollection()
     {
         $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
         return $cache->fetch('terrain');

@@ -11,9 +11,13 @@ return array(
     'Gg' => array(
         Transition::create($terrainTypes->get('Gs'), array('grass/semi-dry' => 3)), 
     ),
+    'Hh' => array(
+        Transition::create($terrainTypes->get('Gs'), array('grass/semi-dry' => 3)), 
+    ),
     'Ww' => array(
         Transition::create($terrainTypes->get('Gg'), array('flat/bank-to-ice' => 2, 'grass/green' => 2)), 
-        Transition::create($terrainTypes->get('Gs'), array('flat/bank-to-ice' => 2, 'grass/semi-dry-abrupt' => 2)), 
+        Transition::create($terrainTypes->get('Hh'), array('flat/bank-to-ice' => 2, 'grass/semi-dry-abrupt' => 1)), 
+        Transition::create($terrainTypes->get('Gs'), array('flat/bank-to-ice' => 2, 'grass/semi-dry-abrupt' => 1)), 
         Transition::create($terrainTypes->get('Wwf'), array('water/ford' => 1)), 
     ),
 );
