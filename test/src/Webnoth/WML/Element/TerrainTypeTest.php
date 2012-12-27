@@ -32,6 +32,15 @@ class TerrainTypeTest extends \PHPUnit_Framework_TestCase
     /**
      * 
      */
+    public function testConstructorArg()
+    {
+        $this->terrain = new TerrainType('^Fds');
+        $this->assertEquals('^Fds', $this->terrain->getString());
+    }
+    
+    /**
+     * 
+     */
     public function testGetString()
     {
         $this->terrain->offsetSet('string', '^Fds');

@@ -21,6 +21,18 @@ class TerrainType extends Element
     const ATTR_ALIASOF = 'aliasof';
     
     /**
+     * TerrainType can be constructed with its string attribute.
+     * 
+     * @param string $string
+     */
+    public function __construct($string = null)
+    {
+        if ($string !== null) {
+            $this->offsetSet('string', $string);
+        }
+    }
+    
+    /**
      * Returns the string attribute (used in map files)
      * 
      * @return string
