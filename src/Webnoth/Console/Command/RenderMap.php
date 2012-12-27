@@ -58,11 +58,11 @@ class RenderMap extends Command
         
         $renderer = new \Webnoth\MapRenderer($terrain);
         
-        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Separator());
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Transitions($terrain));
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\MapRenderer::TILE_HEIGHT));
+        //$renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
         
         $image    = $renderer->render($map);
-        
         $dest     = $input->getArgument(self::DESTINATION_ARG);
         if ($dest == null) {
             $dest = APPLICATION_PATH . '/cache/' . $mapName . '.png';
