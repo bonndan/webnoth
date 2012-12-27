@@ -59,6 +59,23 @@ class TransitionTest extends \PHPUnit_Framework_TestCase
     /**
      * 
      */
+    public function testGetTransitionImagesFromMultipleImages()
+    {
+        $this->transition = Transition::create(
+            $this->terrainType,
+            array('some/image' => 2, 'x/y' => 2)
+        );
+        $res = $this->transition->getTransitionImages($this->createSurroundingTerrains());
+        $this->assertInternalType('array', $res);
+        $this->assertContains('some/image-n', $res);
+        $this->assertContains('some/image-sw-nw', $res);
+        $this->assertContains('x/y-n', $res);
+        $this->assertContains('x/y-sw-nw', $res);
+    }
+    
+    /**
+     * 
+     */
     public function testGetTransitionImagesMergedWithMaxExceeded()
     {
         $this->transition = Transition::create($this->terrainType, array('some/image' => 2));
