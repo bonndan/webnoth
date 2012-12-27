@@ -106,7 +106,6 @@ class MapRenderer
                     self::TILE_HEIGHT
                 );
             }
-            $this->stampCoordinates($image, $x, $y, $col . '.' . $row);
             $col++;
             if ($col == $map->getWidth()) {
                 $col = 0;
@@ -115,20 +114,6 @@ class MapRenderer
         }
         
         return $image;
-    }
-    
-    /**
-     * prints coordinates on the image
-     * 
-     * @param resource $image
-     * @param int      $x
-     * @param int      $y
-     * @param string   $string
-     */
-    protected function stampCoordinates($image, $x, $y, $string)
-    {
-        $black = imagecolorallocate($image, 0, 0, 0);
-        imagestring($image, 0, $x + self::TILE_HEIGHT/2, $y + self::TILE_HEIGHT/2, $string, $black);
     }
     
     /**
@@ -147,9 +132,9 @@ class MapRenderer
         }
         
         $terrains = array();
-        foreach ($stack as $terrainType) {
+        foreach ($stack as $image) {
             try {
-                $terrains[] = $this->getTerrainResource($terrainType);
+                $terrains[] = $this->getTerrainResource($image);
             } catch (\RuntimeException $exception) {
                 if ($this->isGraceful) {
                     continue;
@@ -164,38 +149,38 @@ class MapRenderer
     /**
      * Returns a gd image resource for a specific terrain type
      * 
-     * @param string $terrainString
+     * @param string $image
      * @return resource
      */
-    protected function getTerrainResource($terrainString)
+    protected function getTerrainResource($image)
     {
-        if (is_resource($terrainString)) {
-            return $terrainString;
+        if (is_resource($image)) {
+            return $image;
         }
         
-        if (!isset($this->terrainResources[$terrainString])) {
+        if (!isset($this->terrainResources[$image])) {
             
-            $terrain = $this->terrainTypes->get($terrainString);
+            $terrain = $this->terrainTypes->get($image);
             if ($terrain === null) {
                 //fallback to direct image loading
-                $resource = $this->getTerrainImageResource($terrainString);
+                $resource = $this->getTerrainImageResource($image);
                 if ($resource != false) {
                     return $resource;
                 }
                 
-                throw new \RuntimeException('Could not get() ' . $terrainString . ' from terrain types.');
+                throw new \RuntimeException('Could not get() ' . $image . ' from terrain types.');
             }
             
             $file = $terrain->getSymbolImage();
             $path = $this->imagePath . $file . '.png';
-            $this->terrainResources[$terrainString] = imagecreatefrompng($path);
+            $this->terrainResources[$image] = imagecreatefrompng($path);
         }
         
-        if ($this->terrainResources[$terrainString] == false) {
-            throw new \RuntimeException('Could not load the terrain ' . $terrainString);
+        if ($this->terrainResources[$image] == false) {
+            throw new \RuntimeException('Could not load the terrain ' . $image);
         }
         
-        return $this->terrainResources[$terrainString];
+        return $this->terrainResources[$image];
     }
     
     /**
