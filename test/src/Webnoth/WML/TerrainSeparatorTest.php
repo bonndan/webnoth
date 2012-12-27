@@ -9,7 +9,7 @@ require __DIR__ . '/bootstrap.php';
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class SeparatorTest extends \PHPUnit_Framework_TestCase
+class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * system under test
@@ -66,5 +66,17 @@ class SeparatorTest extends \PHPUnit_Framework_TestCase
             ->with(1, 2, '^Fsd');
         
         $this->separator->processRawTerrain(1, 2, 'Gg^Fsd');
+    }
+    
+    /**
+     * Ensures a starting position is saved
+     */
+    public function testSetStartingPosition()
+    {
+        $this->map->expects($this->once())
+            ->method('setStartingPosition')
+            ->with(1, 2, 3);
+        
+        $this->separator->processRawTerrain(1, 2, '3 Gg');
     }
 }

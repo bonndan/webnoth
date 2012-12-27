@@ -24,6 +24,15 @@ class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
      */
     public function processRawTerrain($column, $row, $rawTerrain)
     {
+        /*
+         * starting positions are noted like "... GG, 3 Ke, Gg, ..."
+         */
+        if (strpos($rawTerrain, ' ') !== false) {
+            $parts = explode(' ', $rawTerrain);
+            $this->map->setStartingPosition($column, $row, $parts[0]);
+            $rawTerrain = $parts[1];
+        }
+            
         $separated = $this->separateRawTerrain($rawTerrain);
         $this->map->setHeightAt($column,  $row, $separated['height']);
         $this->map->setTerrainAt($column, $row, $separated['terrain']);
