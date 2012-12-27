@@ -73,12 +73,12 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
     protected function createSurroundingTerrainsResult()
     {
         return array(
+            'n'  => 'Gg',
             'ne' => 'Ww',
             'se' => 'Ww',
             's'  => 'Ww',
             'sw' => 'Gg',
             'nw' => 'Gg',
-            'n'  => 'Gg'
         );
     }
     

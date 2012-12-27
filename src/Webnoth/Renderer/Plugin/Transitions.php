@@ -12,6 +12,8 @@ use \Webnoth\WML\Collection\TerrainTypes;
  */
 class Transitions extends Base implements \Webnoth\Renderer\Plugin
 {
+    const MAX_MERGED_TRANSITION = 3;
+    
     /**
      * the terrain types
      * @var \Webnoth\WML\Collection\TerrainTypes
@@ -187,6 +189,12 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
                     $dirTerrainType = $this->getBaseTerrainIfNotHidden($terrain);
                     $image = $dirTerrainType->getSymbolImage();
                 }
+                
+                if (count($tmp) == self::MAX_MERGED_TRANSITION) {
+                    $transitions[] = $image . '-' . implode('-', $tmp);
+                    $tmp = array();
+                }
+                
                 $tmp[] = $direction;
             } else {
                 if (!empty($tmp)) {
