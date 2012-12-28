@@ -227,6 +227,23 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * Ensures the overlay tiles are returned properly.
+     */
+    public function testGetOverlayTiles()
+    {
+        $row = array('00^Fsd', '10', '20^Fsd', '30');
+        $this->map->addRawTileRow($row);
+        $row2 = array('01', '11', '21', '31');
+        $this->map->addRawTileRow($row2);
+        
+        $tiles = $this->map->getOverlayTiles();
+        $this->assertEquals(8, count($tiles));
+        $this->assertEquals('^Fsd', $tiles[0]);
+        $this->assertEquals(null, $tiles[1]);
+        $this->assertEquals('^Fsd', $tiles[2]);
+    }
+    
+    /**
      * Ensures terrains can be set to the heightmap.
      */
     public function testSetTerrain()

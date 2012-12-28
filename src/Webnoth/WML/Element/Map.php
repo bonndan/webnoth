@@ -121,6 +121,21 @@ class Map extends Element
     }
     
     /**
+     * Returns all the overlay tiles as a stream.
+     * 
+     * @return array
+     */
+    public function getOverlayTiles()
+    {
+        $tiles = array();
+        foreach ($this->overlays as $row) {
+            $tiles = array_merge($tiles, $row);
+        }
+        
+        return $tiles;
+    }
+    
+    /**
      * Returns the width (in tiles) of the map.
      * 
      * @return int
