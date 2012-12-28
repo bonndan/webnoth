@@ -64,19 +64,16 @@ class Transition
      */
     public function getTransitionImages(\Webnoth\WML\Collection\TerrainTypes $surrounding)
     {
-        $checkedBase = $this->terrainType->getBaseTerrain();
+        $currentTerrain = $this->terrainType->getString();
         
-        /*
-         * filter, keep only relevant entries
-         */
-        foreach ($surrounding as $direction => $terrain) {
-            if ($terrain === null) {
+        foreach ($surrounding as $direction => $terrainType) {
+            if ($terrainType === null) {
                 continue;
             }
-            /* @var $terrain \Webnoth\WML\Element\TerrainType */
-            $dirBase = $terrain->getBaseTerrain($terrain);
             
-            if ($checkedBase != $dirBase) {
+            /* @var $terrainType \Webnoth\WML\Element\TerrainType */
+            $dirTerrain = $terrainType->getString();
+            if ($currentTerrain != $dirTerrain) {
                 $surrounding[$direction] = null;
             }
         };

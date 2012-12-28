@@ -54,7 +54,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
         //iterate the different terrain types, creates transitions per terrain
         foreach ($transitions as $transition) {
             /* @var $transition \Webnoth\Renderer\Transition */
-            $images = $transition->getTransitionImages($surrounding);
+            $images = $transition->getTransitionImages(clone $surrounding);
             $tileStack = array_merge($tileStack, $images);
         }
     }
