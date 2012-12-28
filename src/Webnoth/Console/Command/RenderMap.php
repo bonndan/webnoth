@@ -62,7 +62,7 @@ class RenderMap extends Command
         );
         
         $renderer->addPlugin($transitionPlugin);
-        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\MapRenderer::TILE_HEIGHT));
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\Renderer\Base::TILE_HEIGHT));
         //$renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
         
         $image    = $renderer->render($map);
