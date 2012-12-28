@@ -153,38 +153,38 @@ abstract class Base
     /**
      * Returns a gd image resource for a specific terrain type
      * 
-     * @param string $image
+     * @param string $terrain
      * @return resource
      */
-    protected function getTerrainResource($image)
+    protected function getTerrainResource($terrain)
     {
-        if (is_resource($image)) {
-            return $image;
+        if (is_resource($terrain)) {
+            return $terrain;
         }
         
-        if (!isset($this->imageResources[$image])) {
+        if (!isset($this->imageResources[$terrain])) {
             
-            $terrain = $this->terrainTypes->get($image);
-            if ($terrain === null) {
+            $terrainType = $this->terrainTypes->get($terrain);
+            if ($terrainType === null) {
                 //fallback to direct image loading
-                $resource = $this->getTerrainImageResource($image);
+                $resource = $this->getTerrainImageResource($terrain);
                 if ($resource != false) {
                     return $resource;
                 }
                 
-                throw new \RuntimeException('Could not get() ' . $image . ' from terrain types.');
+                throw new \RuntimeException('Could not get() ' . $terrain . ' from terrain types.');
             }
             
-            $file = $terrain->getSymbolImage();
+            $file = $terrainType->getSymbolImage();
             $path = $this->imagePath . $file . '.png';
-            $this->imageResources[$image] = imagecreatefrompng($path);
+            $this->imageResources[$terrain] = imagecreatefrompng($path);
         }
         
-        if ($this->imageResources[$image] == false) {
-            throw new \RuntimeException('Could not load the terrain ' . $image);
+        if ($this->imageResources[$terrain] == false) {
+            throw new \RuntimeException('Could not load the terrain ' . $terrain);
         }
         
-        return $this->imageResources[$image];
+        return $this->imageResources[$terrain];
     }
     
     /**
