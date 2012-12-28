@@ -56,7 +56,7 @@ class RenderMap extends Command
         $terrain  = $cache->fetch('terrain');
         $map      = $this->getMap($mapName);
         
-        $renderer = new \Webnoth\MapRenderer($terrain);
+        $renderer = new \Webnoth\Renderer\Terrain($terrain);
         
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Transitions($terrain));
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\MapRenderer::TILE_HEIGHT));

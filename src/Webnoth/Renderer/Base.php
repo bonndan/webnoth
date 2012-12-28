@@ -1,6 +1,6 @@
 <?php
 
-namespace Webnoth;
+namespace Webnoth\Renderer;
 
 use Webnoth\WML\Collection\TerrainTypes;
 use Webnoth\WML\Element\Map;
@@ -8,12 +8,12 @@ use Webnoth\WML\Element\TerrainType;
 use \Webnoth\Renderer\Plugin;
 
 /**
- * MapRenderer
+ * Base class for renderers
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class MapRenderer
+abstract class Base
 {
     /**
      * width of a png tile
@@ -43,7 +43,7 @@ class MapRenderer
      * gd resources for the different terrains
      * @var array
      */
-    protected $terrainResources = array();
+    protected $imageResources = array();
     
     /**
      * render plugins
@@ -58,14 +58,13 @@ class MapRenderer
     protected $isGraceful = false;
     
     /**
-     * Initialize the renderer with the available terrains.
+     * Set the terrain types to use when rendering the map.
      * 
-     * @param TerrainTypes $terrainTypes
+     * @param \Webnoth\WML\Collection\TerrainTypes $terrainTypes
      */
-    public function __construct(TerrainTypes $terrainTypes)
+    public function setTerrainTypes(TerrainTypes $terrainTypes)
     {
         $this->terrainTypes = $terrainTypes;
-        $this->imagePath    = APPLICATION_PATH . '/data/terrain/';
     }
     
     /**
@@ -158,7 +157,7 @@ class MapRenderer
             return $image;
         }
         
-        if (!isset($this->terrainResources[$image])) {
+        if (!isset($this->imageResources[$image])) {
             
             $terrain = $this->terrainTypes->get($image);
             if ($terrain === null) {
@@ -173,14 +172,14 @@ class MapRenderer
             
             $file = $terrain->getSymbolImage();
             $path = $this->imagePath . $file . '.png';
-            $this->terrainResources[$image] = imagecreatefrompng($path);
+            $this->imageResources[$image] = imagecreatefrompng($path);
         }
         
-        if ($this->terrainResources[$image] == false) {
+        if ($this->imageResources[$image] == false) {
             throw new \RuntimeException('Could not load the terrain ' . $image);
         }
         
-        return $this->terrainResources[$image];
+        return $this->imageResources[$image];
     }
     
     /**
@@ -192,19 +191,19 @@ class MapRenderer
      */
     protected function getTerrainImageResource($symbolImage)
     {
-        if (!isset($this->terrainResources[$symbolImage])) {
+        if (!isset($this->imageResources[$symbolImage])) {
             $path = $this->imagePath . $symbolImage . '.png';
             if (!is_file($path)) {
                 throw new \RuntimeException('Could not load the terrain ' . $symbolImage . ' from ' . $path);
             }
-            $this->terrainResources[$symbolImage] = imagecreatefrompng($path);
+            $this->imageResources[$symbolImage] = imagecreatefrompng($path);
         }
         
-        if ($this->terrainResources[$symbolImage] == false) {
+        if ($this->imageResources[$symbolImage] == false) {
             throw new \RuntimeException('Could not create image ' . $symbolImage . ' from ' . $path);
         }
         
-        return $this->terrainResources[$symbolImage];
+        return $this->imageResources[$symbolImage];
     }
     
     /**
@@ -239,4 +238,13 @@ class MapRenderer
     {
         $this->isGraceful = (bool)$flag;
     }
+    
+    /**
+     * Returns all the tiles as a stream.
+     * 
+     * @param Map $map
+     * @see Map::getTiles
+     * @return array
+     */
+    abstract function getTilesToRender(Map $map);
 }

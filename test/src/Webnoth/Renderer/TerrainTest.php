@@ -1,25 +1,25 @@
 <?php
-namespace Webnoth;
+namespace Webnoth\Renderer;
 
 require __DIR__ . '/bootstrap.php';
 
 /**
- * MapRendererTest
+ * TerrainTest
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class MapRendererTest extends \PHPUnit_Framework_TestCase
+class TerrainTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * system  under test
-     * @var MapRenderer 
+     * system under test
+     * @var Terrain 
      */
     protected $renderer;
     
     public function setUp()
     {
-        $this->renderer = new MapRenderer($this->createTerrainCollection());
+        $this->renderer = new Terrain($this->createTerrainCollection());
     }
     
     public function tearDown()
@@ -151,6 +151,10 @@ class MapRendererTest extends \PHPUnit_Framework_TestCase
     }
 }
 
+
+/**
+ * Stub for testing
+ */
 class TestPlugin implements \Webnoth\Renderer\Plugin
 {
     public function getTileTerrains(array &$tileStack, $column, $row)
@@ -158,7 +162,7 @@ class TestPlugin implements \Webnoth\Renderer\Plugin
         $tileStack[] = imagecreatetruecolor(72, 72);
     }
 
-    public function setMap(WML\Element\Map $map)
+    public function setMap(\Webnoth\WML\Element\Map $map)
     {
         
     }
