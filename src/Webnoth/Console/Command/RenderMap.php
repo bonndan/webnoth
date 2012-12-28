@@ -72,6 +72,16 @@ class RenderMap extends Command
         }
         $output->writeln('Render the map ' . $mapName . ' to ' . $dest);
         imagepng($image, $dest);
+        
+        /*
+         * overlay
+         */
+        $renderer = new \Webnoth\Renderer\Overlay(APPLICATION_PATH . '/data/terrain/');
+        $renderer->setTerrainTypes($terrainTypes);
+        $image    = $renderer->render($map);
+        $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
+        $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
+        imagepng($image, $dest);
     }
     
     /**
