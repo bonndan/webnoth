@@ -251,5 +251,5 @@ abstract class Base
      * @see Map::getTiles
      * @return array
      */
-    abstract function getTilesToRender(Map $map);
+    abstract protected function getTilesToRender(Map $map);
 }
