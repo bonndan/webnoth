@@ -85,7 +85,7 @@ abstract class Base
         
         $col = 0;
         $row = 0;
-        foreach ($map->getTiles() as $tile) {
+        foreach ($this->getTilesToRender($map) as $tile) {
             
             //offsets
             $yOffset = ($col%2) ? self::TILE_HEIGHT/2 : 0;
@@ -125,6 +125,11 @@ abstract class Base
      */
     protected function getTerrainsForTile($tile, $column, $row)
     {
+        //overlays can be null
+        if ($tile === null) {
+            return array();
+        }
+        
         $stack = array($tile);
         foreach ($this->plugins as $plugin) {
             $plugin->getTileTerrains($stack, $column, $row);
