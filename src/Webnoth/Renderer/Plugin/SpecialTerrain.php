@@ -14,10 +14,12 @@ class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
      * callback filters
      * @var array (terrain => callback method)
      */
-    protected $filters = array(
-        'castle/elven/tile-s' => 'remove',
-        'castle/elven/tile-sw-nw-n' => 'remove',
-        'castle/elven/tile-s-sw' => 'remove',
+    protected $replacements = array(
+        'castle/elven/tile-s' => null,
+        'castle/elven/tile-sw-nw-n' => null,
+        'castle/elven/tile-s-sw' => null,
+        '^Ve' => 'village/elven2',
+        '^Fet' => 'forest/great-tree',
     );
     
     /**
@@ -32,25 +34,13 @@ class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
         $terrain = $this->map->getTerrainAt($column, $row);
         
         foreach ($tileStack as $key => $terrain) {
-            if (!is_string($terrain) || !array_key_exists($terrain, $this->filters)) {
+            if (!is_string($terrain)) {
                 continue;
             }
-            $callback = array($this, $this->filters[$terrain]);
-            $tileStack[$key] = call_user_func_array($callback, array($terrain, $column, $row));
+            
+            if (array_key_exists($terrain, $this->replacements)) {
+                $tileStack[$key] = $this->replacements[$terrain];
+            }
         }
     }
-    
-    /**
-     * Nullifies the entry.
-     * 
-     * @param string $terrain
-     * @param int    $column
-     * @param int    $row
-     */
-    protected function remove($terrain, $column, $row)
-    {
-        return null;
-    }
-    
-    
 }
