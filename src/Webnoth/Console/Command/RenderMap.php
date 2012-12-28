@@ -63,7 +63,6 @@ class RenderMap extends Command
         
         $renderer->addPlugin($transitionPlugin);
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\Renderer\Base::TILE_HEIGHT));
-        //$renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
         
         $image    = $renderer->render($map);
         $dest     = $input->getArgument(self::DESTINATION_ARG);
@@ -78,6 +77,7 @@ class RenderMap extends Command
          */
         $renderer = new \Webnoth\Renderer\Overlay(APPLICATION_PATH . '/data/terrain/');
         $renderer->setTerrainTypes($terrainTypes);
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
         $image    = $renderer->render($map);
         $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
         $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
