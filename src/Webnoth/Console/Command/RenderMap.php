@@ -50,15 +50,18 @@ class RenderMap extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $mapName  = $input->getArgument(self::MAP);
+        $mapName      = $input->getArgument(self::MAP);
+        $cache        = $this->getCache();
+        $terrainTypes = $cache->fetch('terrain');
+        $map          = $this->getMap($mapName);
+        $renderer     = new \Webnoth\Renderer\Terrain($terrainTypes);
         
-        $cache    = $this->getCache();
-        $terrain  = $cache->fetch('terrain');
-        $map      = $this->getMap($mapName);
+        $transitionPlugin = new \Webnoth\Renderer\Plugin\Transitions(
+            $terrainTypes,
+            include APPLICATION_PATH . '/config/terrain-transitions.php'
+        );
         
-        $renderer = new \Webnoth\Renderer\Terrain($terrain);
-        
-        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Transitions($terrain));
+        $renderer->addPlugin($transitionPlugin);
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\MapRenderer::TILE_HEIGHT));
         //$renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
         

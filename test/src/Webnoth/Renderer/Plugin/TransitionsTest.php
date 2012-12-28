@@ -20,7 +20,10 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $terrainTypes = $this->getTerrainCollection();
-        $this->plugin = new Transitions($terrainTypes);
+        $this->plugin = new Transitions(
+            $terrainTypes,
+            include APPLICATION_PATH . '/config/terrain-transitions.php'
+        );
     }
     
     public function tearDown()

@@ -26,14 +26,16 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     protected $transitions = null;
     
     /**
-     * Initialize the renderer with the available terrains.
+     * Initialize the renderer with the available terrains and their transition
+     * configuration.
      * 
      * @param TerrainTypes $terrainTypes
+     * @param array        $transitions
      */
-    public function __construct(TerrainTypes $terrainTypes)
+    public function __construct(TerrainTypes $terrainTypes, array $transitions)
     {
         $this->terrainTypes = $terrainTypes;
-        $this->transitions  = include APPLICATION_PATH . '/config/transitions.php';
+        $this->transitions  = $transitions;
     }
 
     /**
