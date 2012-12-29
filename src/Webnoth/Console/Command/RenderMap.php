@@ -82,6 +82,18 @@ class RenderMap extends Command
         $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
         $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
         imagepng($image->getImage(), $dest);
+        
+        /*
+         * height map
+         */
+        $heightTypes = include APPLICATION_PATH . '/config/height-terrains.php';
+        $factory->setImagePath(APPLICATION_PATH . '/data/heights');
+        $renderer    = new \Webnoth\Renderer\Heightmap($heightTypes, $factory);
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\HeightProvider(include APPLICATION_PATH . '/config/terrain-heightaliases.php'));
+        $image    = $renderer->render($map);
+        $dest = APPLICATION_PATH . '/cache/' . $mapName . '.heightmap.png';
+        $output->writeln('Render the heightmap ' . $mapName . ' to ' . $dest);
+        imagepng($image->getImage(), $dest);
     }
     
     /**
