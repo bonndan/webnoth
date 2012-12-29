@@ -65,4 +65,25 @@ class Resource
     {
         return $this->image;
     }
+    
+    /**
+     * A wrapper for image copy: adds the argument to the image at the given position
+     * 
+     * @param Resource $resource
+     * @param int      $x
+     * @param int      $y
+     */
+    public function add(Resource $resource, $x, $y)
+    {
+        imagecopy(
+            $this->image,
+            $resource->getImage(), 
+            $x,
+            $y,
+            0,
+            0,
+            $resource->width,
+            $resource->height
+        );
+    }
 }

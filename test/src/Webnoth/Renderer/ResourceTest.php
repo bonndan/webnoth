@@ -56,6 +56,16 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * Ensures the add operation works without exception
+     */
+    public function testAdd()
+    {
+        $this->setExpectedException(null);
+        $added = new Resource($this->createImage(34, 34));
+        $this->resource->add($added, 0, 0);
+    }
+    
+    /**
      * creates an empty image
      * 
      * @param int $width
