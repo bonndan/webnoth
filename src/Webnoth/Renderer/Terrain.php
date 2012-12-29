@@ -14,17 +14,6 @@ use Webnoth\WML\Element\Map;
 class Terrain extends Base
 {
     /**
-     * Initialize the renderer with the available terrains.
-     * 
-     * @param TerrainTypes $terrainTypes
-     */
-    public function __construct(TerrainTypes $terrainTypes)
-    {
-        $this->setTerrainTypes($terrainTypes);
-        $this->imagePath    = APPLICATION_PATH . '/data/terrain/';
-    }
-    
-    /**
      * Returns the terrain tiles.
      * 
      * @param \Webnoth\WML\Element\Map $map

@@ -5,8 +5,8 @@ namespace Webnoth\Renderer;
 use Webnoth\WML\Collection\TerrainTypes;
 use Webnoth\WML\Element\Map;
 use Webnoth\WML\Element\TerrainType;
-use \Webnoth\Renderer\Plugin;
-
+use Webnoth\Renderer\Plugin;
+use Webnoth\Renderer\Resource\Factory;
 /**
  * Base class for renderers
  * 
@@ -26,6 +26,12 @@ abstract class Base
      * @var int
      */
     const TILE_HEIGHT = 72;
+    
+    /**
+     * resource factory
+     * @var Factory 
+     */
+    protected $factory = null;
     
     /**
      * collection of all terrains
@@ -58,6 +64,18 @@ abstract class Base
     protected $isGraceful = false;
     
     /**
+     * The constructor requires the terrain types to use an a resource factory.
+     * 
+     * @param TerrainTypes $terrainTypes
+     * @param \Webnoth\Renderer\Resource\Factory $factory
+     */
+    public function __construct(TerrainTypes $terrainTypes, Factory $factory)
+    {
+        $this->setTerrainTypes($terrainTypes);
+        $this->factory = $factory;
+    }
+    
+    /**
      * Set the terrain types to use when rendering the map.
      * 
      * @param \Webnoth\WML\Collection\TerrainTypes $terrainTypes
@@ -71,7 +89,7 @@ abstract class Base
      * Renders the map
      * 
      * @param \Webnoth\WML\Element\Map $map
-     * @return resource
+     * @return \Webnoth\Renderer\Resource
      */
     public function render(Map $map)
     {
@@ -80,8 +98,7 @@ abstract class Base
             $plugin->setMap($map);
         }
         
-        //create the output image
-        $image = $this->getImageResource($map);
+        $image = Factory::createForMap($map);
         
         $col = 0;
         $row = 0;
@@ -91,19 +108,10 @@ abstract class Base
             $yOffset = ($col%2) ? self::TILE_HEIGHT/2 : 0;
             
             $terrainImages = $this->getTerrainsForTile($tile, $col, $row);
-            foreach ($terrainImages as $terrainImage) {
+            foreach ($terrainImages as $resource) {
                 $x = ($col * (0.75 * self::TILE_WIDTH));
                 $y = ($row) * self::TILE_HEIGHT + $yOffset;
-                imagecopy(
-                    $image,
-                    $terrainImage, 
-                    $x,
-                    $y,
-                    0,
-                    0,
-                    self::TILE_WIDTH,
-                    self::TILE_HEIGHT
-                );
+                $image->add($resource, $x, $y);
             }
             $col++;
             if ($col == $map->getWidth()) {
@@ -121,7 +129,7 @@ abstract class Base
      * @param string $tile
      * @param int    $column
      * @param int    $row
-     * @return array(resource)
+     * @return \Webnoth\Renderer\Resource[]
      */
     protected function getTerrainsForTile($tile, $column, $row)
     {
@@ -138,7 +146,7 @@ abstract class Base
         $terrains = array();
         foreach ($stack as $image) {
             try {
-                $terrains[] = $this->getTerrainResource($image);
+                $terrains[] = $this->getResourceFor($image);
             } catch (\RuntimeException $exception) {
                 if ($this->isGraceful) {
                     continue;
@@ -151,14 +159,18 @@ abstract class Base
     }
     
     /**
-     * Returns a gd image resource for a specific terrain type
+     * Returns a resource for a specific terrain type
      * 
-     * @param string $terrain
-     * @return resource
+     * @param mixed $terrain
+     * @return \Webnoth\Renderer\Resource
      */
-    protected function getTerrainResource($terrain)
+    protected function getResourceFor($terrain)
     {
         if (is_resource($terrain)) {
+            return new \Webnoth\Renderer\Resource($terrain);
+        }
+        
+        if ($terrain instanceof Webnoth\Renderer\Resource) {
             return $terrain;
         }
         
@@ -167,17 +179,11 @@ abstract class Base
             $terrainType = $this->terrainTypes->get($terrain);
             if ($terrainType === null) {
                 //fallback to direct image loading
-                $resource = $this->getTerrainImageResource($terrain);
-                if ($resource != false) {
-                    return $resource;
-                }
-                
-                throw new \RuntimeException('Could not get() ' . $terrain . ' from terrain types.');
+                $this->imageResources[$terrain] = $this->factory->createFromPng($terrain);
+            } else {
+                $file = $terrainType->getSymbolImage();
+                $this->imageResources[$terrain] = $this->factory->createFromPng($file);
             }
-            
-            $file = $terrainType->getSymbolImage();
-            $path = $this->imagePath . $file . '.png';
-            $this->imageResources[$terrain] = imagecreatefrompng($path);
         }
         
         if ($this->imageResources[$terrain] == false) {
@@ -185,43 +191,6 @@ abstract class Base
         }
         
         return $this->imageResources[$terrain];
-    }
-    
-    /**
-     * Returns a gd image resource for a specific terrain image
-     * 
-     * @param string $symbolImage
-     * @return resource
-     * @throws \RuntimeException
-     */
-    protected function getTerrainImageResource($symbolImage)
-    {
-        if (!isset($this->imageResources[$symbolImage])) {
-            $path = $this->imagePath . $symbolImage . '.png';
-            if (!is_file($path)) {
-                throw new \RuntimeException('Could not load the terrain ' . $symbolImage . ' from ' . $path);
-            }
-            $this->imageResources[$symbolImage] = imagecreatefrompng($path);
-        }
-        
-        if ($this->imageResources[$symbolImage] == false) {
-            throw new \RuntimeException('Could not create image ' . $symbolImage . ' from ' . $path);
-        }
-        
-        return $this->imageResources[$symbolImage];
-    }
-    
-    /**
-     * Creates a gd image resource based on the map
-     * 
-     * @param \Webnoth\WML\Element\Map $map
-     * @return resource
-     */
-    protected function getImageResource(Map $map)
-    {
-        $width  = $map->getWidth()  * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
-        $height = $map->getHeight() * self::TILE_HEIGHT       + self::TILE_HEIGHT/2;
-        return imagecreatetruecolor($width, $height);
     }
     
     /**

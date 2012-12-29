@@ -19,8 +19,8 @@ class OverlayTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->renderer = new Overlay(APPLICATION_PATH . '/data/terrain/');
-        $this->renderer->setTerrainTypes($this->getCache()->fetch('terrain'));
+        $factory = new \Webnoth\Renderer\Resource\Factory(APPLICATION_PATH . '/data/terrain/');
+        $this->renderer = new Overlay($this->getCache()->fetch('terrain'), $factory);
     }
     
     public function tearDown()
@@ -36,7 +36,7 @@ class OverlayTest extends \PHPUnit_Framework_TestCase
     {
         $map = $this->createMap();
         $res = $this->renderer->render($map);
-        $this->assertInternalType('resource', $res);
+        $this->assertInstanceOf("\Webnoth\Renderer\Resource", $res);
     }
     
     /**

@@ -19,7 +19,8 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->renderer = new Terrain($this->createTerrainCollection());
+        $factory = new \Webnoth\Renderer\Resource\Factory(APPLICATION_PATH . '/data/terrain/');
+        $this->renderer = new Terrain($this->createTerrainCollection(), $factory);
     }
     
     public function tearDown()
@@ -111,7 +112,7 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
     {
         $map = $this->createMap();
         $resource = $this->renderer->render($map);
-        $this->assertInternalType('resource', $resource);
+        $this->assertInstanceOf("\Webnoth\Renderer\Resource", $resource);
     }
     
     /**
