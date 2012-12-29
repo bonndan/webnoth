@@ -77,7 +77,7 @@ class RenderMap extends Command
          * overlay
          */
         $renderer = new \Webnoth\Renderer\Overlay($terrainTypes, $factory);
-        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
+        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain($factory));
         $image    = $renderer->render($map);
         $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
         $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
