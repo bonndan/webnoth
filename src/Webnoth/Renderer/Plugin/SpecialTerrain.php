@@ -2,6 +2,8 @@
 
 namespace Webnoth\Renderer\Plugin;
 
+use Webnoth\Renderer\Resource\Factory;
+
 /**
  * A renderer for special terrain (castles etc.)
  * 
@@ -10,6 +12,12 @@ namespace Webnoth\Renderer\Plugin;
  */
 class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
 {
+    /**
+     * resource factory
+     * @var Factory
+     */
+    protected $factory = null;
+    
     /**
      * callback filters
      * @var array (terrain => callback method)
@@ -23,6 +31,21 @@ class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
     );
     
     /**
+     * Pass a resource factory.
+     * 
+     * @param \Webnoth\Renderer\Resource\Factory $factory
+     */
+    public function __construct(Factory $factory)
+    {
+        $this->factory = $factory;
+        
+        //some terrains require bigger images
+        $resource = $this->factory->createFromPng('forest/great-tree');
+        $resource->setYOffset(-72);
+        $this->replacements['^Fet'] = $resource;
+    }
+    
+    /**
      * Handles special terrains in the stack.
      * 
      * @param array $tileStack
@@ -31,8 +54,6 @@ class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
      */
     public function getTileTerrains(array &$tileStack, $column, $row)
     {
-        $terrain = $this->map->getTerrainAt($column, $row);
-        
         foreach ($tileStack as $key => $terrain) {
             if (!is_string($terrain)) {
                 continue;
@@ -43,4 +64,5 @@ class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
             }
         }
     }
+    
 }
