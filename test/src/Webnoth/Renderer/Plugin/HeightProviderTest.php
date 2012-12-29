@@ -17,12 +17,14 @@ class HeightProviderTest extends \PHPUnit_Framework_TestCase
      */
     protected $plugin;
     
+    protected $map;
+    
     public function setUp()
     {
         $this->plugin = new HeightProvider(include APPLICATION_PATH . '/config/terrain-heightaliases.php');
-        $map = new \Webnoth\WML\Element\Map();
-        $map->addRawTileRow(array('Gg'));
-        $this->plugin->setMap($map);
+        $this->map = new \Webnoth\WML\Element\Map();
+        $this->map->addRawTileRow(array('Gg'));
+        $this->plugin->setMap($this->map);
     }
     
     public function tearDown()
@@ -50,10 +52,14 @@ class HeightProviderTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(HeightProvider::DEFAULT_ALIAS, $stack[0]);
     }
     
+    /**
+     * Ensures the terrain is set to the stack and the map heights are updated.
+     */
     public function testGetTileTerrains()
     {
         $stack = array('Hh');
         $this->plugin->getTileTerrains($stack, 0, 0);
         $this->assertEquals('hills/hills', $stack[0]);
+        $this->assertEquals('hills/hills', $this->map->getHeightAt(0,0));
     }
 }

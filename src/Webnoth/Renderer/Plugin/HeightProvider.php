@@ -42,7 +42,9 @@ class HeightProvider extends Base implements \Webnoth\Renderer\Plugin
     public function getTileTerrains(array &$tileStack, $column, $row)
     {
         $terrain = $tileStack[0];
-        $tileStack = array($this->getAliasFor($terrain));
+        $alias   = $this->getAliasFor($terrain);
+        $this->map->setHeightAt($column, $row, $alias);
+        $tileStack = array($alias);
     }
 
     /**
