@@ -54,8 +54,20 @@ class Factory
     {
         $width  = $map->getWidth()  * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
         $height = $map->getHeight() * self::TILE_HEIGHT       + self::TILE_HEIGHT/2;
-        $image  = imagecreatetruecolor($width, $height);
         
+        return self::create($width, $height);
+    }
+    
+    /**
+     * Creates a resource with an empty image.
+     * 
+     * @param int $width
+     * @param int $height
+     * @return \Webnoth\Renderer\Resource
+     */
+    public static function create($width, $height)
+    {
+        $image  = imagecreatetruecolor($width, $height);
         imagesavealpha($image, true);
         $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
         imagefill($image, 0, 0, $transparent);
