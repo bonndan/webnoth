@@ -90,8 +90,8 @@ class Resource
         imagecopy(
             $this->image,
             $resource->getImage(), 
-            $x,
-            $y,
+            $x + $resource->getXOffset(),
+            $y + $resource->getYOffset(),
             0,
             0,
             $resource->width,
