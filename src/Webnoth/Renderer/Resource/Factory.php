@@ -2,11 +2,28 @@
 
 namespace Webnoth\Renderer\Resource;
 
+use \Webnoth\WML\Element\Map;
+
 /**
  * Resource factory
+ * 
+ * @author  Daniel Pozzi <bonndan76@googlemail.com>
+ * @package Webnoth
  */
 class Factory
 {
+    /**
+     * width of a png tile
+     * @var int
+     */
+    const TILE_WIDTH = 72;
+    
+    /**
+     * height of a png tile
+     * @var int
+     */
+    const TILE_HEIGHT = 72;
+    
     /**
      * path where the terrain images reside
      * @var string
@@ -25,5 +42,24 @@ class Factory
         }
         
         $this->imagePath = $path;
+    }
+    
+    /**
+     * Creates a resource with an empty image for a map.
+     * 
+     * @param Map $map
+     * @return \Webnoth\Renderer\Resource
+     */
+    public static function createForMap(Map $map)
+    {
+        $width  = $map->getWidth()  * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
+        $height = $map->getHeight() * self::TILE_HEIGHT       + self::TILE_HEIGHT/2;
+        $image  = imagecreatetruecolor($width, $height);
+        
+        imagesavealpha($image, true);
+        $transparent = imagecolorallocatealpha($image, 0, 0, 0, 127);
+        imagefill($image, 0, 0, $transparent);
+        
+        return new \Webnoth\Renderer\Resource($image);
     }
 }

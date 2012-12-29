@@ -46,4 +46,25 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->factory->setImagePath('nonsense');
     }
     
+    /**
+     * Ensures a resource is created for a map properly
+     */
+    public function testCreateForMap()
+    {
+        $map = $this->getMockBuilder("\Webnoth\WML\Element\Map")
+            ->disableOriginalConstructor()
+            ->getMock();
+        $map->expects($this->once())
+            ->method('getWidth')
+            ->will($this->returnValue(10));
+        $map->expects($this->once())
+            ->method('getHeight')
+            ->will($this->returnValue(20));
+        
+        $resource = Factory::createForMap($map);
+        $this->assertInstanceOf("\Webnoth\Renderer\Resource", $resource);
+        
+        $this->assertEquals(Factory::TILE_WIDTH * 0.75 * 10 + Factory::TILE_WIDTH * 0.25, imagesx($resource->getImage()));
+        $this->assertEquals(Factory::TILE_HEIGHT * 20 + Factory::TILE_HEIGHT/2, imagesy($resource->getImage()));
+    }
 }
