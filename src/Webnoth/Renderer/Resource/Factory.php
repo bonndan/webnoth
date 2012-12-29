@@ -31,6 +31,18 @@ class Factory
     protected $imagePath;
     
     /**
+     * The image path can be passed to the constructor.
+     * 
+     * @param string $imagePath
+     */
+    public function __construct($imagePath = null)
+    {
+        if ($imagePath !== null) {
+            $this->setImagePath($imagePath);
+        }
+    }
+    
+    /**
      * Set the path where the terrain images reside.
      * 
      * @param string $path

@@ -19,8 +19,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->factory = new Factory();
-        $this->factory->setImagePath(APPLICATION_PATH . '/data/terrain');
+        $this->factory = new Factory(APPLICATION_PATH . '/data/terrain');
     }
     
     public function tearDown()
