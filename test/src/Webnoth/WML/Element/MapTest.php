@@ -258,7 +258,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testSetHeight()
     {
         $this->map->setHeightAt(1, 1, 2);
-        $this->assertAttributeEquals(array(1 => array(1 => 2)), 'heights', $this->map);
+        $this->assertEquals(2, $this->map->getHeightAt(1, 1));
     }
     
     /**
@@ -266,8 +266,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetOverlay()
     {
-        $this->map->setOverlayAt(1, 1, '^Fsd');
-        $this->assertAttributeEquals(array(1 => array(1 => '^Fsd')), 'overlays', $this->map);
+        $this->map->setOverlayAt(2, 1, '^Fsd');
+        $this->assertEquals( '^Fsd', $this->map->getOverlayAt(2, 1));
     }
     
     /**

@@ -254,6 +254,21 @@ class Map extends Element
     }
     
     /**
+     * Set a value to the height map.
+     * 
+     * @param int   $column
+     * @param int   $row
+     */
+    public function getHeightAt($column, $row)
+    {
+        if (!isset($this->heights[$row][$column])) {
+            return null;
+        }
+        
+        return $this->heights[$row][$column];
+    }
+    
+    /**
      * Set a value to the overlay map.
      * 
      * @param int   $column
@@ -263,6 +278,20 @@ class Map extends Element
     public function setOverlayAt($column, $row, $terrain)
     {
         $this->overlays[$row][$column] = $terrain;
+    }
+    
+    /**
+     * Get a value of the overlay map.
+     * 
+     * @param int   $column
+     * @param int   $row
+     */
+    public function getOverlayAt($column, $row)
+    {
+        if (!isset($this->overlays[$row][$column])) {
+            return null;
+        }
+        return $this->overlays[$row][$column];
     }
     
     /**
