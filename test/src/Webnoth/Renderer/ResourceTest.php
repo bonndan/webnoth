@@ -47,6 +47,15 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
+     * Ensures no errors occur.
+     */
+    public function testWrite()
+    {
+        $this->setExpectedException(null);
+        $this->resource->write('test', 0, 0);
+    }
+    
+    /**
      * creates an empty image
      * 
      * @param int $width

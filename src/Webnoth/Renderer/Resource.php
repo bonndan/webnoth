@@ -44,6 +44,19 @@ class Resource
     }
     
     /**
+     * Write a string to the image (for debugging).
+     * 
+     * @param string $string
+     * @param int    $x
+     * @param int    $y
+     */
+    public function write($string, $x, $y)
+    {
+        $black = imagecolorallocate($this->image, 0, 0, 0);
+        imagestring($this->image, 0, $x, $y, $string, $black);
+    }
+    
+    /**
      * Returns the gd resource.
      * 
      * @return resource
