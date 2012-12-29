@@ -54,7 +54,8 @@ class RenderMap extends Command
         $cache        = $this->getCache();
         $terrainTypes = $cache->fetch('terrain');
         $map          = $this->getMap($mapName);
-        $renderer     = new \Webnoth\Renderer\Terrain($terrainTypes);
+        $factory      = new \Webnoth\Renderer\Resource\Factory(APPLICATION_PATH . '/data/terrain');
+        $renderer     = new \Webnoth\Renderer\Terrain($terrainTypes, $factory);
         
         $transitionPlugin = new \Webnoth\Renderer\Plugin\Transitions(
             $terrainTypes,
@@ -70,18 +71,17 @@ class RenderMap extends Command
             $dest = APPLICATION_PATH . '/cache/' . $mapName . '.png';
         }
         $output->writeln('Render the map ' . $mapName . ' to ' . $dest);
-        imagepng($image, $dest);
+        imagepng($image->getImage(), $dest);
         
         /*
          * overlay
          */
-        $renderer = new \Webnoth\Renderer\Overlay(APPLICATION_PATH . '/data/terrain/');
-        $renderer->setTerrainTypes($terrainTypes);
+        $renderer = new \Webnoth\Renderer\Overlay($terrainTypes, $factory);
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain());
         $image    = $renderer->render($map);
         $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
         $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
-        imagepng($image, $dest);
+        imagepng($image->getImage(), $dest);
     }
     
     /**
