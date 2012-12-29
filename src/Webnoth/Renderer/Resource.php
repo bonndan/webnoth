@@ -29,6 +29,18 @@ class Resource
     protected $height;
     
     /**
+     * rendering x offset
+     * @var int
+     */
+    protected $xOffset = 0;
+    
+    /**
+     * rendering y offset
+     * @var int
+     */
+    protected $yOffset = 0;
+    
+    /**
      * Initialise with a gd resource.
      * 
      * @param resource $resource
@@ -85,5 +97,45 @@ class Resource
             $resource->width,
             $resource->height
         );
+    }
+    
+    /**
+     * Returns the x offset for rendering
+     * 
+     * @return int
+     */
+    public function getXOffset()
+    {
+        return $this->xOffset;
+    }
+
+    /**
+     * Set the y offset for rendering
+     * 
+     * @param int $xOffset
+     */
+    public function setXOffset($xOffset)
+    {
+        $this->xOffset = (int) $xOffset;
+    }
+
+    /**
+     * Returns the y offset for rendering
+     * 
+     * @return int
+     */
+    public function getYOffset()
+    {
+        return $this->yOffset;
+    }
+
+    /**
+     * Set the y offset for rendering.
+     * 
+     * @param int $yOffset
+     */
+    public function setYOffset($yOffset)
+    {
+        $this->yOffset = (int) $yOffset;
     }
 }

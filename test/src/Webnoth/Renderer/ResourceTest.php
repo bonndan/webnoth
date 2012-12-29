@@ -65,6 +65,28 @@ class ResourceTest extends \PHPUnit_Framework_TestCase
         $this->resource->add($added, 0, 0);
     }
     
+    public function testGetXOffset()
+    {
+        $this->assertEquals(0, $this->resource->getXOffset());
+    }
+    
+    public function testSetXOffset()
+    {
+        $this->resource->setXOffset(20);
+        $this->assertEquals(20, $this->resource->getXOffset());
+    }
+    
+    public function testGetYOffset()
+    {
+        $this->assertEquals(0, $this->resource->getYOffset());
+    }
+    
+    public function testSetYOffset()
+    {
+        $this->resource->setYOffset(20);
+        $this->assertEquals(20, $this->resource->getYOffset());
+    }
+    
     /**
      * creates an empty image
      * 
