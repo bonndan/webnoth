@@ -74,4 +74,21 @@ class Factory
         
         return new \Webnoth\Renderer\Resource($image);
     }
+    
+    /**
+     * Creates a resource for a terrain.
+     * 
+     * @param string $imageBase
+     * @throws \RuntimeException
+     * @return \Webnoth\Renderer\Resource
+     */
+    public function createFromPng($imageBase)
+    {
+        $path = $this->imagePath . '/' . $imageBase . '.png';
+        if (!is_file($path)) {
+            throw new \RuntimeException('Could not load the file ' . $imageBase . ' from ' . $path);
+        }
+        $image = imagecreatefrompng($path);
+        return new \Webnoth\Renderer\Resource($image);
+    }
 }

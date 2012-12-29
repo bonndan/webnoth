@@ -67,4 +67,16 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(Factory::TILE_WIDTH * 0.75 * 10 + Factory::TILE_WIDTH * 0.25, imagesx($resource->getImage()));
         $this->assertEquals(Factory::TILE_HEIGHT * 20 + Factory::TILE_HEIGHT/2, imagesy($resource->getImage()));
     }
+    
+    public function testCreateFromPng()
+    {
+        $resource = $this->factory->createFromPng('grass/green');
+        $this->assertInstanceOf("\Webnoth\Renderer\Resource", $resource);
+    }
+    
+    public function testCreateFromPngException()
+    {
+        $this->setExpectedException("\RuntimeException");
+        $this->factory->createFromPng('grass/xxx');
+    }
 }
