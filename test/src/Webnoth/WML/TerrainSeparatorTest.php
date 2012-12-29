@@ -44,9 +44,6 @@ class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
     public function testStackIsNotModified()
     {
         $this->map->expects($this->once())
-            ->method('setHeightAt')
-            ->with(1, 2, 0.2);
-        $this->map->expects($this->once())
             ->method('setTerrainAt')
             ->with(1, 2, 'Gg');
         $this->map->expects($this->once())

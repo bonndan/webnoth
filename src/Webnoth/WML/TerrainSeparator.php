@@ -10,11 +10,6 @@ namespace Webnoth\WML;
  */
 class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
 {
-    const WATER_HEIGHT     = 0.0;
-    const FLAT_HEIGHT      = 0.2;
-    const HILL_HEIGHT      = 1;
-    const MOUNTAIN_HEIGHT  = 3;
-    
     /**
      * Processes raw terrain input.
      * 
@@ -34,7 +29,6 @@ class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
         }
             
         $separated = $this->separateRawTerrain($rawTerrain);
-        $this->map->setHeightAt($column,  $row, $separated['height']);
         $this->map->setTerrainAt($column, $row, $separated['terrain']);
         $this->map->setOverlayAt($column, $row, $separated['overlay']);
     }
@@ -47,7 +41,6 @@ class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
      */
     protected function separateRawTerrain($terrain)
     {
-        $height  = self::FLAT_HEIGHT;
         $overlay = null;
         
         //either no caret or at the beginning
@@ -58,7 +51,6 @@ class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
         }
         
         return array(
-            'height'  => $height,
             'terrain' => $terrain,
             'overlay' => $overlay
         );
