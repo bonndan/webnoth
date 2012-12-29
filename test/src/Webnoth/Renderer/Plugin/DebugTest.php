@@ -40,7 +40,7 @@ class DebugTest extends \PHPUnit_Framework_TestCase
         $stack = array('Gg', 'Ww');
         $this->plugin->getTileTerrains($stack, 0, 0);
         $this->assertEquals(3, count($stack));
-        $this->assertInternalType('resource', $stack[2]);
+        $this->assertInstanceOf("\Webnoth\Renderer\Resource", $stack[2]);
     }
     
 }

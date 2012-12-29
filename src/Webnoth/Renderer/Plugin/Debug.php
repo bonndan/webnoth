@@ -2,6 +2,8 @@
 
 namespace Webnoth\Renderer\Plugin;
 
+use \Webnoth\Renderer\Resource\Factory;
+
 /**
  * Debug plugin renders coordinates and terrains as strings
  * 
@@ -28,18 +30,14 @@ class Debug extends Base implements \Webnoth\Renderer\Plugin
     }
 
     /**
+     * Adds a transparent image to the stack containing debug infos.
      * 
      * @param array $tileStack
-     * @param type $column
-     * @param type $row
+     * @param int $column
+     * @param int $row
      */
     public function getTileTerrains(array &$tileStack, $column, $row)
     {
-        //offsets
-        $yOffset = ($column % 2) ? $this->size / 2 : 0;
-        $x = ($column * (0.75 * $this->size));
-        $y = ($row) * $this->size + $yOffset;
-
         $terrain = $this->map->getTerrainAt($column, $row);
         $coords = $column . '.' . $row;
         $tileStack[] = $this->getStamp($coords, $terrain);
@@ -50,18 +48,13 @@ class Debug extends Base implements \Webnoth\Renderer\Plugin
      * 
      * @param string $coords
      * @param string $terrain
-     * @return resource
+     * @return \Webnoth\Renderer\Resource
      */
     protected function getStamp($coords, $terrain)
     {
-        $image = imagecreatetruecolor($this->size, $this->size);
-        imagesavealpha($image, true);
-        $trans = imagecolorallocatealpha($image, 0, 0, 0, 127);
-        $black = imagecolorallocate($image, 0, 0, 0);
-        imagefill($image, 0, 0, $trans);
-        imagestring($image, 0, $this->size / 3, $this->size / 3, $coords, $black);
-        imagestring($image, 0, $this->size / 3, $this->size / 2, $terrain, $black);
-        return $image;
+        $resource = Factory::create($this->size, $this->size);
+        $resource->write($coords, $this->size / 3, $this->size / 3);
+        $resource->write($terrain, $this->size / 3, $this->size / 2);
+        return $resource;
     }
-
 }
