@@ -41,7 +41,7 @@ class SpecialTerrain extends Base implements \Webnoth\Renderer\Plugin
         
         //some terrains require bigger images
         $resource = $this->factory->createFromPng('forest/great-tree');
-        $resource->setYOffset(-72);
+        $resource->setYOffset(-34);
         $this->replacements['^Fet'] = $resource;
     }
     
