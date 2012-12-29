@@ -170,7 +170,7 @@ abstract class Base
             return new \Webnoth\Renderer\Resource($terrain);
         }
         
-        if ($terrain instanceof Webnoth\Renderer\Resource) {
+        if ($terrain instanceof \Webnoth\Renderer\Resource) {
             return $terrain;
         }
         
