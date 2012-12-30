@@ -8,15 +8,27 @@ automatically.
 ## Installation
 
 - clone the github repo.
-- create caches: 
+- install composer
+
+
+##Usage
+
+First create a cache of the terrain configuration 
 
 ```
 php consolenoth.php parse:terrain data/terrain.cfg
+```
+
+then parse a map (will be cached as well)
+
+```
 php consolenoth.php parse:map data/01_The_Elves_Besieged.map
 ```
 
-- then have the map rendered:
+then have the map rendered:
 
 ```
 php consolenoth.php render:map 01_The_Elves_Besieged
 ```
+
+all results will be stored in the ./cache directory.
