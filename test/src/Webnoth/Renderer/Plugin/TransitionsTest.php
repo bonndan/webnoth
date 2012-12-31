@@ -52,14 +52,9 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
             ->method('getSurroundingTerrains')
             ->with(2, 2)
             ->will($this->returnValue($this->createSurroundingTerrainsResult()));
-        $map->expects($this->once())
-            ->method('getTerrainAt')
-            ->with(2, 2)
-            ->will($this->returnValue('Ww'));
-        
         $this->plugin->setMap($map);
         
-        $stack = array();
+        $stack = array('Ww');
         $this->plugin->getTileTerrains($stack, 2, 2);
         
         $this->assertGreaterThan(0, count($stack), var_export($stack, true));
@@ -86,14 +81,9 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
             ->method('getSurroundingTerrains')
             ->with(2, 2)
             ->will($this->returnValue($this->createSurroundingTerrainsResult($directions)));
-        $map->expects($this->once())
-            ->method('getTerrainAt')
-            ->with(2, 2)
-            ->will($this->returnValue('Ww'));
-        
         $this->plugin->setMap($map);
         
-        $stack = array();
+        $stack = array('Ww');
         $this->plugin->getTileTerrains($stack, 2, 2);
         
         $this->assertGreaterThan(0, count($stack), var_export($stack, true));
