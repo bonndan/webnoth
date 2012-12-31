@@ -38,7 +38,7 @@ class Debug extends Base implements \Webnoth\Renderer\Plugin
      */
     public function getTileTerrains(array &$tileStack, $column, $row)
     {
-        $terrain = $this->map->getTerrainAt($column, $row);
+        $terrain = $tileStack[0];
         $coords = $column . '.' . $row;
         $tileStack[] = $this->getStamp($coords, $terrain);
     }
