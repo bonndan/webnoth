@@ -8,8 +8,24 @@ namespace Webnoth\WML;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class TerrainSeparator extends \Webnoth\Renderer\Plugin\Base
+class TerrainSeparator
 {
+    /**
+     * map
+     * @var \Webnoth\WML\Element\Map 
+     */
+    protected $map;
+    
+    /**
+     * Pass the map to the constructor.
+     * 
+     * @param \Webnoth\WML\Element\Map $map
+     */
+    public function __construct(Element\Map $map)
+    {
+        $this->map = $map;
+    }
+    
     /**
      * Processes raw terrain input.
      * 

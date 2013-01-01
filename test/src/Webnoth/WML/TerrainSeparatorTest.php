@@ -25,11 +25,10 @@ class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
     
     public function setUp()
     {
-        $this->separator = new TerrainSeparator();
         $this->map = $this->getMockBuilder("\Webnoth\WML\Element\Map")
             ->disableOriginalConstructor()
             ->getMock();
-        $this->separator->setMap($this->map);
+        $this->separator = new TerrainSeparator($this->map);
     }
     
     public function tearDown()
