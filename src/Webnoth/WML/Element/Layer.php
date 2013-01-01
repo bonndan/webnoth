@@ -135,4 +135,25 @@ class Layer
     {
         $this->terrains[$row][$column] = $terrain;
     }
+    
+    /**
+     * Returns the number of rows.
+     * 
+     * @return int
+     */
+    public function getRowCount()
+    {
+        return count($this->terrains);
+    }
+    
+    /**
+     * Returns the number columns (of the first row)
+     * 
+     * @return int
+     */
+    public function getWidth()
+    {
+        reset($this->terrains);
+        return count(current($this->terrains));
+    }
 }

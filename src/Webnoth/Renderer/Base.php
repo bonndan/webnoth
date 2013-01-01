@@ -88,21 +88,16 @@ abstract class Base
     /**
      * Renders the map
      * 
-     * @param \Webnoth\WML\Element\Map $map
+     * @param \Webnoth\WML\Element\Layer $layer
      * @return \Webnoth\Renderer\Resource
      */
-    public function render(Map $map)
+    public function render(\Webnoth\WML\Element\Layer $layer)
     {
-        //initialize the plugins with the map
-        foreach ($this->plugins as $plugin) {
-            $plugin->setMap($map);
-        }
-        
-        $image = Factory::createForMap($map);
+        $image = Factory::createForLayer($layer);
         
         $col = 0;
         $row = 0;
-        foreach ($this->getTilesToRender($map) as $tile) {
+        foreach ($layer->getTiles() as $tile) {
             
             //offsets
             $yOffset = ($col%2) ? self::TILE_HEIGHT/2 : 0;
@@ -114,7 +109,7 @@ abstract class Base
                 $image->add($resource, $x, $y);
             }
             $col++;
-            if ($col == $map->getWidth()) {
+            if ($col == $layer->getWidth()) {
                 $col = 0;
                 $row++;
             }

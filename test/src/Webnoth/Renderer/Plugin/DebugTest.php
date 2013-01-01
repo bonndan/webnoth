@@ -33,10 +33,9 @@ class DebugTest extends \PHPUnit_Framework_TestCase
      */
     public function testStampIsAddedModified()
     {
-        $map = new \Webnoth\WML\Element\Map();
+        $map = \Webnoth\WML\Element\Map::create();
         $map->addRawTileRow(array('Gg'));
         
-        $this->plugin->setMap($map);
         $stack = array('Gg', 'Ww');
         $this->plugin->getTileTerrains($stack, 0, 0);
         $this->assertEquals(3, count($stack));

@@ -17,6 +17,8 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
      */
     protected $plugin;
     
+    protected $terrainLayer;
+    
     public function setUp()
     {
         $terrainTypes = $this->getTerrainCollection();
@@ -35,11 +37,11 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
     /**
      * Ensure the map is injected
      */
-    public function testSetMap()
+    public function testSetLayer()
     {
-        $map = new \Webnoth\WML\Element\Map();
-        $this->plugin->setMap($map);
-        $this->assertAttributeEquals($map, 'map', $this->plugin);
+        $map = \Webnoth\WML\Element\Map::create();
+        $this->plugin->setLayer($map->getLayer('terrains'));
+        $this->assertAttributeEquals($map->getLayer('terrains'), 'layer', $this->plugin);
     }
     
     /**
@@ -47,12 +49,12 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetTileTerrains()
     {
-        $map = $this->getMock("\Webnoth\WML\Element\Map");
-        $map->expects($this->once())
+        $layer = $this->getMock("\Webnoth\WML\Element\Layer");
+        $layer->expects($this->once())
             ->method('getSurroundingTerrains')
             ->with(2, 2)
             ->will($this->returnValue($this->createSurroundingTerrainsResult()));
-        $this->plugin->setMap($map);
+        $this->plugin->setLayer($layer);
         
         $stack = array('Ww');
         $this->plugin->getTileTerrains($stack, 2, 2);
@@ -76,12 +78,12 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
                 'nw' => 'Gs',
             );
         
-        $map = $this->getMock("\Webnoth\WML\Element\Map");
-        $map->expects($this->once())
+        $layer = $this->getMock("\Webnoth\WML\Element\Layer");
+        $layer->expects($this->once())
             ->method('getSurroundingTerrains')
             ->with(2, 2)
             ->will($this->returnValue($this->createSurroundingTerrainsResult($directions)));
-        $this->plugin->setMap($map);
+        $this->plugin->setLayer($layer);
         
         $stack = array('Ww');
         $this->plugin->getTileTerrains($stack, 2, 2);

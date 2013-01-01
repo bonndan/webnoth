@@ -40,21 +40,6 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * Ensures the plugins receive a reference to the map
-     */
-    public function testPluginReceivesMapOnRender()
-    {
-        $plugin = $this->createPluginMock();
-        $this->renderer->addPlugin($plugin);
-        
-        $map = $this->createMap();
-        $plugin->expects($this->once())
-            ->method('setMap')
-            ->with($map);
-        $this->renderer->render($map);
-    }
-    
-    /**
      * Ensures the plugins receive the terrain stack
      */
     public function testPluginHandlesStackOnRender()
@@ -62,10 +47,12 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
         $plugin = $this->createPluginMock();
         $this->renderer->addPlugin($plugin);
         
-        $map = $this->createMap();
+        $map = \Webnoth\WML\Element\Map::create();
+        $map->addRawTileRow(array('Gg', 'Gg'));
+        
         $plugin->expects($this->exactly(2))
             ->method('getTileTerrains');
-        $this->renderer->render($map);
+        $this->renderer->render($map->getLayer('terrains'));
     }
     
     /**
@@ -73,11 +60,11 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderWithCustomTerrainImages()
     {
-        $map = new \Webnoth\WML\Element\Map();
+        $map = \Webnoth\WML\Element\Map::create();
         $map->addRawTileRow(array('sand/beach'));
         
         $this->setExpectedException(null);
-        $this->renderer->render($map);
+        $this->renderer->render($map->getLayer('terrains'));
     }
     
     /**
@@ -85,11 +72,11 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderWithNotExistingCustomTerrainImage()
     {
-        $map = new \Webnoth\WML\Element\Map();
+        $map = \Webnoth\WML\Element\Map::create();
         $map->addRawTileRow(array('xxx/yyy'));
         
         $this->setExpectedException("\RuntimeException");
-        $this->renderer->render($map);
+        $this->renderer->render($map->getLayer('terrains'));
     }
     
     /**
@@ -97,12 +84,12 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
      */
     public function testResourcesCanBeUsedInsteadOfTerrains()
     {
-        $map = new \Webnoth\WML\Element\Map();
+        $map = \Webnoth\WML\Element\Map::create();
         $map->addRawTileRow(array('Gg'));
         
         $this->renderer->addPlugin(new TestPlugin);
         $this->setExpectedException(null);
-        $this->renderer->render($map);
+        $this->renderer->render($map->getLayer('terrains'));
     }
     
     /**
@@ -110,8 +97,8 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
      */
     public function testRenderReturnsResource()
     {
-        $map = $this->createMap();
-        $resource = $this->renderer->render($map);
+        $map = \Webnoth\WML\Element\Map::create();
+        $resource = $this->renderer->render($map->getLayer('terrains'));
         $this->assertInstanceOf("\Webnoth\Renderer\Resource", $resource);
     }
     
@@ -137,19 +124,6 @@ class TerrainTest extends \PHPUnit_Framework_TestCase
         );
         return new \Webnoth\WML\Collection\TerrainTypes($elements);
     }
-    
-    /**
-     * creates a map for testing
-     * 
-     * @return \Webnoth\WML\Element\Map
-     */
-    protected function createMap()
-    {
-        $map = new \Webnoth\WML\Element\Map();
-        $map->addRawTileRow(array('Gg', 'Gg'));
-        
-        return $map;
-    }
 }
 
 
@@ -163,7 +137,7 @@ class TestPlugin implements \Webnoth\Renderer\Plugin
         $tileStack[] = imagecreatetruecolor(72, 72);
     }
 
-    public function setMap(\Webnoth\WML\Element\Map $map)
+    public function setLayer(\Webnoth\WML\Element\Layer $layer)
     {
         
     }

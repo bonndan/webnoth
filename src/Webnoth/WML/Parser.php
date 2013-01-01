@@ -46,7 +46,7 @@ class Parser
         while (null !== $this->lexer->lookahead) {
             if (Lexer::T_OPEN_ELEMENT == $this->lexer->lookahead['type']) {
                 $className = "\Webnoth\WML\Element\\" . $this->getElementName($this->lexer->lookahead['value']);
-                $currentElement = new $className();
+                $currentElement = $this->createClass($className);
             }
 
             if (Lexer::T_VALUE == $this->lexer->lookahead['type']) {
@@ -69,6 +69,20 @@ class Parser
         }
 
         return $collection;
+    }
+
+    /**
+     * 
+     * @param type $classname
+     * @return \Webnoth\WML\Element
+     */
+    protected function createClass($classname)
+    {
+        if (method_exists($classname, 'create')) {
+            return call_user_func(array($classname, 'create'));
+        }
+        
+        return new $classname;
     }
 
     /**

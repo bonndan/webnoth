@@ -11,18 +11,18 @@ namespace Webnoth\Renderer\Plugin;
 abstract class Base
 {
     /**
-     * map
-     * @var \Webnoth\WML\Element\Map 
+     * the layer which is used by the plugin
+     * @var \Webnoth\WML\Element\Layer 
      */
-    protected $map;
+    protected $layer;
     
     /**
-     * set the map
+     * Set the layer to work on.
      * 
-     * @param \Webnoth\WML\Element\Map $map
+     * @param \Webnoth\WML\Element\Layer $map
      */
-    public function setMap(\Webnoth\WML\Element\Map $map)
+    public function setLayer(\Webnoth\WML\Element\Layer $layer)
     {
-        $this->map = $map;
+        $this->layer = $layer;
     }
 }

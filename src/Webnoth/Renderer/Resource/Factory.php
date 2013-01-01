@@ -2,7 +2,7 @@
 
 namespace Webnoth\Renderer\Resource;
 
-use \Webnoth\WML\Element\Map;
+use \Webnoth\WML\Element\Layer;
 
 /**
  * Resource factory
@@ -57,15 +57,15 @@ class Factory
     }
     
     /**
-     * Creates a resource with an empty image for a map.
+     * Creates a resource with an empty image for a layer.
      * 
-     * @param Map $map
+     * @param Layer $layer
      * @return \Webnoth\Renderer\Resource
      */
-    public static function createForMap(Map $map)
+    public static function createForLayer(Layer $layer)
     {
-        $width  = $map->getWidth()  * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
-        $height = $map->getHeight() * self::TILE_HEIGHT       + self::TILE_HEIGHT/2;
+        $width  = $layer->getWidth()    * self::TILE_WIDTH * 0.75 + self::TILE_WIDTH * 0.25;
+        $height = $layer->getRowCount() * self::TILE_HEIGHT       + self::TILE_HEIGHT/2;
         
         return self::create($width, $height);
     }

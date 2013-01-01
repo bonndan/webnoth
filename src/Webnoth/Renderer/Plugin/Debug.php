@@ -12,7 +12,6 @@ use \Webnoth\Renderer\Resource\Factory;
  */
 class Debug extends Base implements \Webnoth\Renderer\Plugin
 {
-
     /**
      * stamp dimension
      * @var int

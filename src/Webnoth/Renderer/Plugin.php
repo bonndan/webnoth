@@ -2,6 +2,8 @@
 
 namespace Webnoth\Renderer;
 
+use \Webnoth\WML\Element\Layer;
+
 /**
  * Renderer Plugin
  * 
@@ -11,16 +13,18 @@ namespace Webnoth\Renderer;
 interface Plugin
 {
     /**
-     * Pass the map to plugin.
+     * Set the layer which is used by the plugin
      * 
-     * @param \Webnoth\WML\Element\Map $map
+     * @param Layer $map
      */
-    public function setMap(\Webnoth\WML\Element\Map $map);
+    public function setLayer(Layer $layer);
     
     /**
      * Modifies the stack of terrains for one tile (if needed)
      * 
      * @param array $tileStack
+     * @param int   $column
+     * @param int   $row
      */
     public function getTileTerrains(array &$tileStack, $column, $row);
 }

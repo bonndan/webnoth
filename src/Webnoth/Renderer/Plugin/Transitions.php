@@ -49,7 +49,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
      */
     public function getTileTerrains(array &$tileStack, $column, $row)
     {
-        $surrounding    = $this->map->getSurroundingTerrains($column, $row, $this->terrainTypes);
+        $surrounding    = $this->layer->getSurroundingTerrains($column, $row);
         $currentTerrain = $tileStack[0];
         $transitions    = $this->getTransitionsToCheck($currentTerrain);
         

@@ -48,19 +48,19 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     /**
      * Ensures a resource is created for a map properly
      */
-    public function testCreateForMap()
+    public function testCreateForLayer()
     {
-        $map = $this->getMockBuilder("\Webnoth\WML\Element\Map")
+        $layer = $this->getMockBuilder("\Webnoth\WML\Element\Layer")
             ->disableOriginalConstructor()
             ->getMock();
-        $map->expects($this->once())
+        $layer->expects($this->once())
             ->method('getWidth')
             ->will($this->returnValue(10));
-        $map->expects($this->once())
-            ->method('getHeight')
+        $layer->expects($this->once())
+            ->method('getRowCount')
             ->will($this->returnValue(20));
         
-        $resource = Factory::createForMap($map);
+        $resource = Factory::createForLayer($layer);
         $this->assertInstanceOf("\Webnoth\Renderer\Resource", $resource);
         
         $this->assertEquals(Factory::TILE_WIDTH * 0.75 * 10 + Factory::TILE_WIDTH * 0.25, imagesx($resource->getImage()));

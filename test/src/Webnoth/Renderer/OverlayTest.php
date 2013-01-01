@@ -34,8 +34,10 @@ class OverlayTest extends \PHPUnit_Framework_TestCase
      */
     public function testRender()
     {
-        $map = $this->createMap();
-        $res = $this->renderer->render($map);
+        $map = \Webnoth\WML\Element\Map::create();
+        $map->addRawTileRow(array('Gg', 'Gg^Fds'));
+        
+        $res = $this->renderer->render($map->getLayer('overlays'));
         $this->assertInstanceOf("\Webnoth\Renderer\Resource", $res);
     }
     
@@ -44,25 +46,12 @@ class OverlayTest extends \PHPUnit_Framework_TestCase
      */
     public function testResourcesCanBeUsedInsteadOfTerrains()
     {
-        $map = new \Webnoth\WML\Element\Map();
+        $map = \Webnoth\WML\Element\Map::create();
         $map->addRawTileRow(array('Gg'));
         
         $this->renderer->addPlugin(new TestPlugin);
         $this->setExpectedException(null);
-        $this->renderer->render($map);
-    }
-    
-    /**
-     * creates a map for testing
-     * 
-     * @return \Webnoth\WML\Element\Map
-     */
-    protected function createMap()
-    {
-        $map = new \Webnoth\WML\Element\Map();
-        $map->addRawTileRow(array('Gg', 'Gg^Fds'));
-        
-        return $map;
+        $this->renderer->render($map->getLayer('overlays'));
     }
     
     /**

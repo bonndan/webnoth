@@ -9,7 +9,7 @@ use \Webnoth\WML\TerrainSeparator;
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  */
-class Map
+class Map extends \Webnoth\WML\Element
 {
     const LAYER_TERRAIN  = 'terrains';
     const LAYER_HEIGHTS  = 'heights';

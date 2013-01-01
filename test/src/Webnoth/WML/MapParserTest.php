@@ -52,7 +52,7 @@ class MapParserTest extends \PHPUnit_Framework_TestCase
     public function testHasAllTiles()
     {
         $res = $this->parser->parse($this->getInput());
-        $this->assertEquals(32, count($res->getTiles()));
+        $this->assertEquals(32, count($res->getLayer('terrains')->getTiles()));
     }
     
     /**
