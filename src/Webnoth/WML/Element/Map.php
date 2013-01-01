@@ -1,16 +1,20 @@
 <?php
 
 namespace Webnoth\WML\Element;
-use \Webnoth\WML\Element;
-use \Webnoth\WML\Collection\TerrainTypes;
+
+use \Webnoth\WML\TerrainSeparator;
 
 /**
  * Element containing map data
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  */
-class Map extends Element
+class Map
 {
+    const LAYER_TERRAIN  = 'terrains';
+    const LAYER_HEIGHTS  = 'heights';
+    const LAYER_OVERLAYS = 'overlays';
+    
     /**
      * raw terrain splitter
      * @var \Webnoth\WML\TerrainSeparator
@@ -24,22 +28,22 @@ class Map extends Element
     protected $width = null;
     
     /**
-     * array of arrays referring terrain types
-     * @var array y => x
+     * terrain layer
+     * @var Layer
      */
-    protected $terrains = array();
+    protected $terrains = null;
     
     /**
-     * array of arrays referring terrain heights
-     * @var array
+     * height layer
+     * @var Layer
      */
-    protected $heights = array();
+    protected $heights = null;
     
     /**
-     * array of arrays referring terrain overlays / obstacles
-     * @var array
+     * overlay layer
+     * @var Layer
      */
-    protected $overlays = array();
+    protected $overlays = null;
     
     /**
      * all starting positions of the sides
@@ -48,29 +52,53 @@ class Map extends Element
     protected $startingPositions = array();
     
     /**
-     * Pass the separator as raw terrain splitter.
+     * Creates a completely configured map
      * 
-     * @param \Webnoth\WML\TerrainSeparator $separator
+     * @return Map
      */
-    public function setSeparator(\Webnoth\WML\TerrainSeparator $separator)
+    public static function create()
     {
-        $this->separator = $separator;
-        $this->separator->setMap($this);
+        $terrainTypes = self::getCache()->fetch('terrain');
+        $terrainLayer = new Layer($terrainTypes);
+        $overlayLayer = new Layer($terrainTypes);
+        
+        $terrainTypes = include APPLICATION_PATH . '/config/height-terrains.php';
+        $heightLayer  = new Layer($terrainTypes);
+        
+        $map = new Map(
+            $terrainLayer,
+            $overlayLayer,
+            $heightLayer
+        );
+        $separator = new TerrainSeparator($map, include APPLICATION_PATH . '/config/terrain-heightaliases.php');
+        $map->setTerrainSeparator($separator);
+        
+        return $map;
     }
     
     /**
-     * Returns the terrain separator.
+     * Pass the three layer instances to the constructor.
      * 
-     * @return \Webnoth\WML\TerrainSeparator
+     * @param \Webnoth\WML\Element\Layer $terrainLayer
+     * @param \Webnoth\WML\Element\Layer $overlayLayer
+     * @param \Webnoth\WML\Element\Layer $heightLayer
      */
-    protected function getSeparator()
+    public function __construct(Layer $terrainLayer, Layer $overlayLayer, Layer $heightLayer)
     {
-        if ($this->separator === null) {
-            $this->separator = new \Webnoth\WML\TerrainSeparator();
-            $this->separator->setMap($this);
-        }
+        $this->terrains  = $terrainLayer;
+        $this->overlays  = $overlayLayer;  
+        $this->heights   = $heightLayer;
         
-        return $this->separator;
+    }
+    
+    /**
+     * Inject the terrain separator.
+     * 
+     * @param \Webnoth\WML\TerrainSeparator $separator
+     */
+    public function setTerrainSeparator(TerrainSeparator $separator)
+    {
+        $this->separator = $separator;
     }
     
     /**
@@ -82,9 +110,9 @@ class Map extends Element
     {
         $this->setWidth(count($tiles));
         $column = 0;
-        $row = count($this->terrains);
-        foreach ($tiles as $key => $rawTile) {
-            $this->getSeparator()->processRawTerrain($column, $row, $rawTile);
+        $row = $this->terrains->getRowCount();
+        foreach ($tiles as $rawTile) {
+            $this->separator->processRawTerrain($column, $row, $rawTile);
             $column++;
         }
     }
@@ -106,36 +134,6 @@ class Map extends Element
     }
     
     /**
-     * Returns all the tiles as a stream.
-     * 
-     * @return array
-     */
-    public function getTiles()
-    {
-        $tiles = array();
-        foreach ($this->terrains as $row) {
-            $tiles = array_merge($tiles, $row);
-        }
-        
-        return $tiles;
-    }
-    
-    /**
-     * Returns all the overlay tiles as a stream.
-     * 
-     * @return array
-     */
-    public function getOverlayTiles()
-    {
-        $tiles = array();
-        foreach ($this->overlays as $row) {
-            $tiles = array_merge($tiles, $row);
-        }
-        
-        return $tiles;
-    }
-    
-    /**
      * Returns the width (in tiles) of the map.
      * 
      * @return int
@@ -152,7 +150,7 @@ class Map extends Element
      */
     public function getHeight()
     {
-        return count($this->terrains);
+        return $this->terrains->getRowCount();
     }
     
     /**
@@ -164,73 +162,9 @@ class Map extends Element
         return $this->startingPositions;
     }
     
-    /**
-	 * return surrounding tiles by direction
-	 * 
-     * @param int $column
-     * @param int $row
-     * @param \Webnoth\WML\Collection\TerrainTypes $terrains
-	 * @return \Webnoth\WML\Collection\TerrainTypes
-     * @link http://wiki.wesnoth.org/TerrainGraphicsTutorial#The_hex_coordinate_system
-	 */
-    public function getSurroundingTerrains($column, $row, TerrainTypes $terrains)
-    {
-		if ($column%2) {//odd column
-			$surrounding = array(
-				'ne' => $this->getTerrainAt($column+1, $row),
-				'se' => $this->getTerrainAt($column+1, $row+1),
-				's'  => $this->getTerrainAt($column,   $row+1),
-				'sw' => $this->getTerrainAt($column-1, $row+1),
-				'nw' => $this->getTerrainAt($column-1, $row),
-				'n'  => $this->getTerrainAt($column,   $row-1)
-			);
-        } else {
-			$surrounding = array(
-				'ne' => $this->getTerrainAt($column+1, $row-1),
-				'se' => $this->getTerrainAt($column+1, $row),
-				's'  => $this->getTerrainAt($column,   $row+1),
-				'sw' => $this->getTerrainAt($column-1, $row),
-				'nw' => $this->getTerrainAt($column-1, $row-1),
-				'n'  => $this->getTerrainAt($column,   $row-1)
-			);
-        }
-        
-        return $this->toTerrainTypeCollection($surrounding, $terrains);
-    }
     
     /**
-     * Converts an terrain string array into a terraintype collection.
-     * 
-     * @param array $collection
-     * @param \Webnoth\WML\Collection\TerrainTypes $terrains
-     * @return \Webnoth\WML\Collection\TerrainTypes
-     */
-    protected function toTerrainTypeCollection(array $collection, TerrainTypes $terrains)
-    {
-        foreach ($collection as $key => $terrain) {
-            $collection[$key] = $terrains->get($terrain);
-        }
-            
-        return new \Webnoth\WML\Collection\TerrainTypes($collection);
-    }
-    
-    /**
-     * Returns the terrain type (raw) at a given offset
-     * 
-     * @param int $column
-     * @param int $row
-     * @return string
-     */
-    public function getTerrainAt($column, $row)
-    {
-        if (!isset($this->terrains[$row][$column])) {
-            return TerrainType::VOID;
-        }
-        return $this->terrains[$row][$column];
-    }
-    
-    /**
-     * Set a specific terrain at a coordinate.
+     * Set a specific terrain to the terrain layer
      * 
      * @param int    $column
      * @param int    $row
@@ -238,34 +172,19 @@ class Map extends Element
      */
     public function setTerrainAt($column, $row, $terrain)
     {
-        $this->terrains[$row][$column] = $terrain;
+        $this->terrains->setTerrainAt($column, $row, $terrain);
     }
     
     /**
      * Set a value to the height map.
      * 
-     * @param int   $column
-     * @param int   $row
-     * @param float $height
+     * @param int    $column
+     * @param int    $row
+     * @param string $height
      */
     public function setHeightAt($column, $row, $height)
     {
-        $this->heights[$row][$column] = $height;
-    }
-    
-    /**
-     * Set a value to the height map.
-     * 
-     * @param int   $column
-     * @param int   $row
-     */
-    public function getHeightAt($column, $row)
-    {
-        if (!isset($this->heights[$row][$column])) {
-            return null;
-        }
-        
-        return $this->heights[$row][$column];
+        $this->heights->setTerrainAt($column, $row, $height);
     }
     
     /**
@@ -277,21 +196,23 @@ class Map extends Element
      */
     public function setOverlayAt($column, $row, $terrain)
     {
-        $this->overlays[$row][$column] = $terrain;
+        $this->overlays->setTerrainAt($column, $row, $terrain); 
     }
     
     /**
-     * Get a value of the overlay map.
+     * Fetch a specified layer.
      * 
-     * @param int   $column
-     * @param int   $row
+     * @param string $layer
+     * @return Layer
+     * @throws \InvalidArgumentException
      */
-    public function getOverlayAt($column, $row)
+    public function getLayer($layer)
     {
-        if (!isset($this->overlays[$row][$column])) {
-            return null;
+        if (!in_array($layer, array(self::LAYER_HEIGHTS, self::LAYER_OVERLAYS, self::LAYER_TERRAIN))) {
+            throw new \InvalidArgumentException('Unknown layer: ' . $layer);
         }
-        return $this->overlays[$row][$column];
+        
+        return $this->$layer;
     }
     
     /**
@@ -304,5 +225,16 @@ class Map extends Element
     public function setStartingPosition($column, $row, $number)
     {
         $this->startingPositions[$number] = array($row, $column);
+    }
+    
+    /**
+     * creates a cache instance
+     * 
+     * @return \Doctrine\Common\Cache\FilesystemCache
+     */
+    protected static function getCache()
+    {
+        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        return $cache;
     }
 }

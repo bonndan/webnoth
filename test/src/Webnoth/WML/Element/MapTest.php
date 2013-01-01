@@ -20,7 +20,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         parent::setUp();
-        $this->map = new Map();
+        $this->map = new Map(
+            $this->createLayer(),
+            $this->createLayer(),
+            $this->createLayer()
+        );
+        $this->map->setTerrainSeparator(new \Webnoth\WML\TerrainSeparator($this->map, array()));
     }
     
     public function tearDown()
@@ -34,9 +39,11 @@ class MapTest extends \PHPUnit_Framework_TestCase
      */
     public function testAddRawTileRow()
     {
-        $row = array('Gg', 'Gg');
-        $this->map->addRawTileRow($row);
-        $this->assertEquals($row, $this->map->getTiles());
+        $this->map->addRawTileRow(array('Gg', 'Gg'));
+        $this->map->addRawTileRow(array('Re', 'Re'));
+        
+        $this->assertEquals(2, $this->map->getWidth());
+        $this->assertEquals(2, $this->map->getHeight());
     }
     
     /**
@@ -64,18 +71,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * ensures all added tiles are stored
-     */
-    public function testAddRawTileRowTwice()
-    {
-        $this->map->addRawTileRow(array('Gg', 'Gg'));
-        $this->map->addRawTileRow(array('Re', 'Re'));
-        
-        $this->assertEquals(4, count($this->map->getTiles()));
-        $this->assertEquals(array('Gg', 'Gg', 'Re', 'Re'), $this->map->getTiles());
-    }
-    
-    /**
      * ensures all consecutive calls must have same width
      */
     public function testAddRawTileRowException()
@@ -83,91 +78,6 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->map->addRawTileRow(array('Gg', 'Gg'));
         $this->setExpectedException("\RuntimeException");
         $this->map->addRawTileRow(array('Gg', 'Gg', 'Gg'));
-    }
-    
-    /**
-     * Ensures the terrain type can be grabbed by coordinates
-     */
-    public function testGetTerrainAt()
-    {
-        $row = array('00', '10', '20', '30');
-        $this->map->addRawTileRow($row);
-        $row = array('01', '11', '21', '31');
-        $this->map->addRawTileRow($row);
-        $row = array('02', '12', '22', '32');
-        $this->map->addRawTileRow($row);
-        $row = array('03', '13', '23', '33');
-        $this->map->addRawTileRow($row);
-        
-        $this->assertEquals('11', $this->map->getTerrainAt(1, 1));
-        $this->assertEquals('22', $this->map->getTerrainAt(2, 2));
-        $this->assertEquals('32', $this->map->getTerrainAt(3, 2));
-        $this->assertEquals('Xv', $this->map->getTerrainAt(4, 2));
-    }
-    
-    /**
-     * Ensures off-map coords return a void terrain type
-     */
-    public function testGetTerrainAtReturnsVoid()
-    {
-        $row = array('11', '21', '31', '41');
-        $this->map->addRawTileRow($row);
-        
-        $this->assertEquals(TerrainType::VOID, $this->map->getTerrainAt(40, 20));
-    }
-    
-    /**
-     * Ensures the surrounding terrains are returned properly
-     */
-    public function testGetSurroundingTerrainsForEvenCol()
-    {
-        $row = array('00', '10', '20', '30');
-        $this->map->addRawTileRow($row);
-        $row = array('01', '11', '21', '31');
-        $this->map->addRawTileRow($row);
-        $row = array('02', '12', '22', '32');
-        $this->map->addRawTileRow($row);
-        $row = array('03', '13', '23', '33');
-        $this->map->addRawTileRow($row);
-        
-        $surrounding = $this->map->getSurroundingTerrains(2, 2, $this->createFakeTerrainLookup($this->map));
-        $this->assertInstanceOf("\Webnoth\WML\Collection\TerrainTypes", $surrounding);
-        $expected = array(
-            'ne' => '31',
-            'se' => '32',
-            's'  => '23',
-            'sw' => '12',
-            'nw' => '11',
-            'n'  => '21'
-        );
-        $this->assertCollectionEquals($expected, $surrounding);
-    }
-    
-    /**
-     * Ensures the surrounding terrains are returned properly
-     */
-    public function testGetSurroundingTerrainsForOddCol()
-    {
-        $row = array('00', '10', '20', '30');
-        $this->map->addRawTileRow($row);
-        $row = array('01', '11', '21', '31');
-        $this->map->addRawTileRow($row);
-        $row = array('02', '12', '22', '32');
-        $this->map->addRawTileRow($row);
-        $row = array('03', '13', '23', '33');
-        $this->map->addRawTileRow($row);
-        $this->map->getTiles();
-        $surrounding = $this->map->getSurroundingTerrains(1, 1, $this->createFakeTerrainLookup($this->map));
-        $this->assertInstanceOf("\Webnoth\WML\Collection\TerrainTypes", $surrounding);
-        $expected = array(
-            'ne' => '21',
-            'se' => '22',
-            's'  => '12',
-            'sw' => '02',
-            'nw' => '01',
-            'n'  => '10'
-        );
-        $this->assertCollectionEquals($expected, $surrounding);
     }
     
     /**
@@ -214,7 +124,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(2, $this->map->getHeight());
     }
     
-    public function testGetTiles()
+    public function _testGetTiles()
     {
         $row = array('00', '10', '20', '30');
         $this->map->addRawTileRow($row);
@@ -227,29 +137,12 @@ class MapTest extends \PHPUnit_Framework_TestCase
     }
     
     /**
-     * Ensures the overlay tiles are returned properly.
-     */
-    public function testGetOverlayTiles()
-    {
-        $row = array('00^Fsd', '10', '20^Fsd', '30');
-        $this->map->addRawTileRow($row);
-        $row2 = array('01', '11', '21', '31');
-        $this->map->addRawTileRow($row2);
-        
-        $tiles = $this->map->getOverlayTiles();
-        $this->assertEquals(8, count($tiles));
-        $this->assertEquals('^Fsd', $tiles[0]);
-        $this->assertEquals(null, $tiles[1]);
-        $this->assertEquals('^Fsd', $tiles[2]);
-    }
-    
-    /**
      * Ensures terrains can be set to the heightmap.
      */
     public function testSetTerrain()
     {
         $this->map->setTerrainAt(1, 1, 'Gg');
-        $this->assertAttributeEquals(array(1 => array(1 => 'Gg')), 'terrains', $this->map);
+        $this->assertEquals('Gg', $this->map->getLayer(Map::LAYER_TERRAIN)->getTerrainAt(1, 1));
     }
     
     /**
@@ -257,8 +150,8 @@ class MapTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetHeight()
     {
-        $this->map->setHeightAt(1, 1, 2);
-        $this->assertEquals(2, $this->map->getHeightAt(1, 1));
+        $this->map->setHeightAt(1, 2, 3);
+        $this->assertEquals(3, $this->map->getLayer(Map::LAYER_HEIGHTS)->getTerrainAt(1, 2));
     }
     
     /**
@@ -267,7 +160,7 @@ class MapTest extends \PHPUnit_Framework_TestCase
     public function testSetOverlay()
     {
         $this->map->setOverlayAt(2, 1, '^Fsd');
-        $this->assertEquals( '^Fsd', $this->map->getOverlayAt(2, 1));
+        $this->assertEquals('^Fsd', $this->map->getLayer(Map::LAYER_OVERLAYS)->getTerrainAt(2, 1));
     }
     
     /**
@@ -277,5 +170,30 @@ class MapTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->setStartingPosition(12, 13, 3);
         $this->assertAttributeEquals(array(3 => array(13, 12)), 'startingPositions', $this->map);
+    }
+    
+    /**
+     * Ensures an exception is throw if the layer id is wrong
+     */
+    public function testGetLayerException()
+    {
+        $this->setExpectedException("\InvalidArgumentException");
+        $this->map->getLayer('test');
+    }
+
+    public function testCreate()
+    {
+        $map = Map::create();
+        $this->assertInstanceOf("\Webnoth\WML\Element\Map", $map);
+    }
+
+    /**
+     * Creates a fake layer
+     * 
+     * @return \Webnoth\WML\Element\Layer
+     */
+    protected function createLayer()
+    {
+        return new Layer();
     }
 }

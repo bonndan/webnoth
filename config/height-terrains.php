@@ -18,10 +18,13 @@ $mountains = new \Webnoth\WML\Element\TerrainType('mountains');
 $mountains->offsetSet('symbol_image', 'mountains/white');
 
 $elements = array(
-    $void,
-    $water,
-    $flat,
-    $hills,
-    $mountains
+    $void->getString()      => $void,
+    $water->getString()     => $water,
+    $flat->getString()      => $flat,
+    $hills->getString()     => $hills,
+    $mountains->getString() => $mountains
 );
-return new \Webnoth\WML\Collection\TerrainTypes($elements);
+
+$terrainTypes = new \Webnoth\WML\Collection\TerrainTypes($elements);
+
+return $terrainTypes;
