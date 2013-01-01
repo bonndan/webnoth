@@ -11,19 +11,32 @@ namespace Webnoth\WML;
 class TerrainSeparator
 {
     /**
+     * the default height if no alias is given
+     * @var string
+     */
+    const DEFAULT_HEIGHT = 'flat/flat';
+    
+    /**
      * map
      * @var \Webnoth\WML\Element\Map 
      */
     protected $map;
+    
+     /**
+     * terrain aliases: which terrain appears how in the height map
+     * @var array
+     */
+    protected $aliases = array();
     
     /**
      * Pass the map to the constructor.
      * 
      * @param \Webnoth\WML\Element\Map $map
      */
-    public function __construct(Element\Map $map)
+    public function __construct(Element\Map $map, array $terrainAliases)
     {
-        $this->map = $map;
+        $this->map     = $map;
+        $this->aliases = $terrainAliases;
     }
     
     /**
@@ -47,6 +60,7 @@ class TerrainSeparator
         $separated = $this->separateRawTerrain($rawTerrain);
         $this->map->setTerrainAt($column, $row, $separated['terrain']);
         $this->map->setOverlayAt($column, $row, $separated['overlay']);
+        $this->map->setHeightAt( $column, $row, $separated['height']);
     }
     
     /**
@@ -68,7 +82,23 @@ class TerrainSeparator
         
         return array(
             'terrain' => $terrain,
-            'overlay' => $overlay
+            'overlay' => $overlay,
+            'height'  => $this->getAliasFor($terrain)
         );
+    }
+    
+    /**
+     * Returns the replacement for a terrain
+     * 
+     * @param string $terrain
+     * @return string
+     */
+    protected function getAliasFor($terrain)
+    {
+        if (!array_key_exists($terrain, $this->aliases)) {
+            return self::DEFAULT_HEIGHT;
+        }
+        
+        return $this->aliases[$terrain];
     }
 }

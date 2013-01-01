@@ -28,7 +28,10 @@ class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
         $this->map = $this->getMockBuilder("\Webnoth\WML\Element\Map")
             ->disableOriginalConstructor()
             ->getMock();
-        $this->separator = new TerrainSeparator($this->map);
+        $this->separator = new TerrainSeparator(
+            $this->map,
+            include APPLICATION_PATH . '/config/terrain-heightaliases.php'
+        );
     }
     
     public function tearDown()
@@ -62,6 +65,30 @@ class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
             ->with(1, 2, '^Fsd');
         
         $this->separator->processRawTerrain(1, 2, 'Gg^Fsd');
+    }
+    
+    /**
+     * Ensures a height is set
+     */
+    public function testDefaultHeightIsSet()
+    {
+        $this->map->expects($this->once())
+            ->method('setHeightAt')
+            ->with(1, 2, 'flat/flat');
+        
+        $this->separator->processRawTerrain(1, 2, 'Gg^Fsd');
+    }
+    
+    /**
+     * Ensures a height is set
+     */
+    public function testHeightIsSet()
+    {
+        $this->map->expects($this->once())
+            ->method('setHeightAt')
+            ->with(1, 2, 'water/water');
+        
+        $this->separator->processRawTerrain(1, 2, 'Ww');
     }
     
     /**
