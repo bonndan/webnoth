@@ -21,7 +21,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RenderMap extends Command
 {
+    /**
+     * map argument (file name without suffix, must be cached)
+     * @var string
+     */
     const MAP = 'file';
+    
+    /**
+     * destination file
+     * @var string
+     */
     const DESTINATION_ARG = 'dest';
     
     protected function configure()
@@ -32,7 +41,7 @@ class RenderMap extends Command
             ->addArgument(
                 self::MAP,
                 InputArgument::REQUIRED,
-                'Which is the file to render?'
+                'Which is the (parsed) map to render?'
             )
             ->addArgument(
                 self::DESTINATION_ARG,
@@ -57,15 +66,18 @@ class RenderMap extends Command
         $factory      = new \Webnoth\Renderer\Resource\Factory(APPLICATION_PATH . '/data/terrain');
         $renderer     = new \Webnoth\Renderer\Terrain($terrainTypes, $factory);
         
+        //transition plugin
         $transitionPlugin = new \Webnoth\Renderer\Plugin\Transitions(
             $terrainTypes,
             include APPLICATION_PATH . '/config/terrain-transitions.php'
         );
-        
         $renderer->addPlugin($transitionPlugin);
-        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\Debug(\Webnoth\Renderer\Base::TILE_HEIGHT));
         
-        $image    = $renderer->render($map);
+        //debug plugin
+        $debugPlugin = new \Webnoth\Renderer\Plugin\Debug(\Webnoth\Renderer\Base::TILE_HEIGHT);
+        $renderer->addPlugin($debugPlugin);
+        
+        $image    = $renderer->render($map->getLayer('terrains'));
         $dest     = $input->getArgument(self::DESTINATION_ARG);
         if ($dest == null) {
             $dest = APPLICATION_PATH . '/cache/' . $mapName . '.png';
@@ -78,7 +90,7 @@ class RenderMap extends Command
          */
         $renderer = new \Webnoth\Renderer\Overlay($terrainTypes, $factory);
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain($factory));
-        $image    = $renderer->render($map);
+        $image    = $renderer->render($map->getLayer('overlays'));
         $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
         $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
         imagepng($image->getImage(), $dest);
@@ -86,11 +98,15 @@ class RenderMap extends Command
         /*
          * height map
          */
-        $heightTypes = include APPLICATION_PATH . '/config/height-terrains.php';
+        $terrainTypes = include APPLICATION_PATH . '/config/height-terrains.php';
         $factory->setImagePath(APPLICATION_PATH . '/data/heights');
-        $renderer    = new \Webnoth\Renderer\Heightmap($heightTypes, $factory);
-        $renderer->addPlugin(new \Webnoth\Renderer\Plugin\HeightProvider(include APPLICATION_PATH . '/config/terrain-heightaliases.php'));
-        $image    = $renderer->render($map);
+        $renderer    = new \Webnoth\Renderer\Heightmap($terrainTypes, $factory);
+        $transitionPlugin = new \Webnoth\Renderer\Plugin\Transitions(
+            $terrainTypes,
+            include APPLICATION_PATH . '/config/height-transitions.php'
+        );
+        $renderer->addPlugin($transitionPlugin);
+        $image    = $renderer->render($map->getLayer('heights'));
         $dest = APPLICATION_PATH . '/cache/' . $mapName . '.heightmap.png';
         $output->writeln('Render the heightmap ' . $mapName . ' to ' . $dest);
         imagepng($image->getImage(), $dest);
