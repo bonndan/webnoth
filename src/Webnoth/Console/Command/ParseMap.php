@@ -58,7 +58,7 @@ class ParseMap extends Command
         $cache->save($filename, $result);
         
         //$destination = $input->getArgument(self::DESTINATION_ARG);
-        $output->writeln('Parsed the map ' . $filename .' successfully: ' . count($result->getTiles()). ' tiles.');
+        $output->writeln('Parsed the map ' . $filename .' successfully: ' . count($result->getLayer('terrains')->getTiles()). ' tiles.');
         $output->writeln('Cached the result under: ' . $filename);
     }
 }
