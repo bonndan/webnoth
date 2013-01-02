@@ -7,17 +7,8 @@ namespace Webnoth\Renderer;
  * 
  * @author  Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
+ * @deprecated
  */
 class Overlay extends Base
 {
-    /**
-     * Returns the overlay tiles.
-     * 
-     * @param \Webnoth\WML\Element\Map $map
-     * @return array
-     */
-    protected function getTilesToRender(\Webnoth\WML\Element\Map $map)
-    {
-        return $map->getOverlayTiles();
-    }
 }

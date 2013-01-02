@@ -9,17 +9,8 @@ namespace Webnoth\Renderer;
  * 
  * @author  Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
+ * @deprecated
  */
 class Heightmap extends Base
 {
-    /**
-     * Returns the regular tiles.
-     * 
-     * @param \Webnoth\WML\Element\Map $map
-     * @return array
-     */
-    protected function getTilesToRender(\Webnoth\WML\Element\Map $map)
-    {
-        return $map->getTiles();
-    }
 }

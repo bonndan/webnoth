@@ -13,7 +13,7 @@ use Webnoth\Renderer\Resource\Factory;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-abstract class Base
+class Base
 {
     /**
      * width of a png tile
@@ -93,8 +93,11 @@ abstract class Base
      */
     public function render(\Webnoth\WML\Element\Layer $layer)
     {
-        $image = Factory::createForLayer($layer);
+        foreach ($this->plugins as $plugin) {
+            $plugin->setLayer($layer);
+        }
         
+        $image = Factory::createForLayer($layer);
         $col = 0;
         $row = 0;
         foreach ($layer->getTiles() as $tile) {
@@ -207,13 +210,4 @@ abstract class Base
     {
         $this->isGraceful = (bool)$flag;
     }
-    
-    /**
-     * Returns all the tiles as a stream.
-     * 
-     * @param Map $map
-     * @see Map::getTiles
-     * @return array
-     */
-    abstract protected function getTilesToRender(Map $map);
 }

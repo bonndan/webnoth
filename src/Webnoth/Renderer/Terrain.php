@@ -10,17 +10,8 @@ use Webnoth\WML\Element\Map;
  * 
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
+ * @deprecated 
  */
 class Terrain extends Base
 {
-    /**
-     * Returns the terrain tiles.
-     * 
-     * @param \Webnoth\WML\Element\Map $map
-     * @return array
-     */
-    public function getTilesToRender(Map $map)
-    {
-        return $map->getTiles();
-    }
 }
