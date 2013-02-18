@@ -71,7 +71,7 @@ class Transitions extends Base implements \Webnoth\Renderer\Plugin
     {
         if (isset($this->transitions[$terrain])) {
             return $this->transitions[$terrain];
-        } 
+        }
         
         return array();
     }

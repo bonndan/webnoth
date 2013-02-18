@@ -14,7 +14,7 @@ class TerrainSeparator
      * the default height if no alias is given
      * @var string
      */
-    const DEFAULT_HEIGHT = 'flat/flat';
+    const DEFAULT_HEIGHT = 'flat';
     
     /**
      * map
@@ -23,20 +23,21 @@ class TerrainSeparator
     protected $map;
     
      /**
-     * terrain aliases: which terrain appears how in the height map
+     * height aliases: which terrain appears how in the height map
      * @var array
      */
-    protected $aliases = array();
+    protected $heightAliases = array();
     
     /**
      * Pass the map to the constructor.
      * 
      * @param \Webnoth\WML\Element\Map $map
+     * @param array                    $heightAliases
      */
-    public function __construct(Element\Map $map, array $terrainAliases)
+    public function __construct(Element\Map $map, array $heightAliases)
     {
-        $this->map     = $map;
-        $this->aliases = $terrainAliases;
+        $this->map           = $map;
+        $this->heightAliases = $heightAliases;
     }
     
     /**
@@ -56,7 +57,7 @@ class TerrainSeparator
             $this->map->setStartingPosition($column, $row, $parts[0]);
             $rawTerrain = $parts[1];
         }
-            
+        
         $separated = $this->separateRawTerrain($rawTerrain);
         $this->map->setTerrainAt($column, $row, $separated['terrain']);
         $this->map->setOverlayAt($column, $row, $separated['overlay']);
@@ -83,7 +84,7 @@ class TerrainSeparator
         return array(
             'terrain' => $terrain,
             'overlay' => $overlay,
-            'height'  => $this->getAliasFor($terrain)
+            'height'  => $this->getHeightAliasFor($terrain)
         );
     }
     
@@ -93,12 +94,12 @@ class TerrainSeparator
      * @param string $terrain
      * @return string
      */
-    protected function getAliasFor($terrain)
+    protected function getHeightAliasFor($terrain)
     {
-        if (!array_key_exists($terrain, $this->aliases)) {
+        if (!array_key_exists($terrain, $this->heightAliases)) {
             return self::DEFAULT_HEIGHT;
         }
         
-        return $this->aliases[$terrain];
+        return $this->heightAliases[$terrain];
     }
 }

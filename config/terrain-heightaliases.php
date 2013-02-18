@@ -3,8 +3,8 @@
  * terrain => height terrain (greyscale) mapping
  */
 return array(
-    'Mm' => 'mountains/mountains',
-    'Hh' => 'hills/hills',
-    'Ww' => 'water/water',
-    'Wo' => 'water/water',
+    'Mm' => 'mountains',
+    'Hh' => 'hills',
+    'Ww' => 'water',
+    'Wo' => 'water',
 );

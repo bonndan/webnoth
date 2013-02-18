@@ -74,7 +74,7 @@ class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->expects($this->once())
             ->method('setHeightAt')
-            ->with(1, 2, 'flat/flat');
+            ->with(1, 2, 'flat');
         
         $this->separator->processRawTerrain(1, 2, 'Gg^Fsd');
     }
@@ -86,7 +86,7 @@ class TerrainSeparatorTest extends \PHPUnit_Framework_TestCase
     {
         $this->map->expects($this->once())
             ->method('setHeightAt')
-            ->with(1, 2, 'water/water');
+            ->with(1, 2, 'water');
         
         $this->separator->processRawTerrain(1, 2, 'Ww');
     }
