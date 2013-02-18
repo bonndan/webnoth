@@ -37,6 +37,7 @@ return array(
         Transition::create($terrainTypes->get('Hh'), array('flat/bank-to-ice' => 2, 'grass/semi-dry-abrupt' => 1)), 
         Transition::create($terrainTypes->get('Re'), array('flat/bank-to-ice' => 2)), 
         Transition::create($terrainTypes->get('Wwf'), array('water/ford' => 1)), 
+        Transition::create($terrainTypes->get('Wo'), array('water/ocean-long-A01' => 1)), 
     ),
     
     //ford
@@ -44,5 +45,10 @@ return array(
         Transition::create($terrainTypes->get('Cv'), array('flat/bank-to-ice' => 2, 'grass/green' => 2)), 
         Transition::create($terrainTypes->get('Gs'), array('grass/semi-dry-abrupt' => 1)),
         Transition::create($terrainTypes->get('Gg'), array('grass/green' => 3)), 
+    ),
+    
+    //ford
+    'Wo' => array(
+        Transition::create($terrainTypes->get('Ww'), array('water/ocean-long-A15' => 1)), 
     ),
 );
