@@ -33,7 +33,8 @@ class Transition
     /**
      * Factory method, invoked with the image base configuration
      * 
-     * @param array $imageBases array(image => maxAdjacentTiles)
+     * @param TerrainType $terrainType
+     * @param array       $imageBases array(image => maxAdjacentTiles)
      * @return Transition
      */
     public static function create(TerrainType $terrainType, array $imageBases)
