@@ -72,10 +72,6 @@ class RenderMap extends WebnothCommand
         );
         $renderer->addPlugin($transitionPlugin);
         
-        //debug plugin
-        $debugPlugin = new \Webnoth\Renderer\Plugin\Debug(\Webnoth\Renderer\Base::TILE_HEIGHT);
-        $renderer->addPlugin($debugPlugin);
-        
         $image    = $renderer->render($map->getLayer('terrains'));
         $dest     = $input->getArgument(self::DESTINATION_ARG);
         if ($dest == null) {
