@@ -20,7 +20,8 @@ return array(
     
     //hills
     'Hh' => array(
-        Transition::create($terrainTypes->get('Gs'), array('grass/semi-dry' => 3)), 
+        Transition::create($terrainTypes->get('Gs'), array('grass/semi-dry' => 3)),
+        Transition::create($terrainTypes->get('Gg'), array('grass/green' => 3)),
     ),
     
     //dirt
