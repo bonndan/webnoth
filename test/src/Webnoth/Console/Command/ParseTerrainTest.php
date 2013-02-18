@@ -39,7 +39,7 @@ class ParseTerrainTest extends \PHPUnit_Framework_TestCase
         
         $this->command->run($input, $output);
         
-        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        $cache = new \Doctrine\Common\Cache\FilesystemCache(CACHE_PATH);
         $collection = $cache->fetch('terrain');
         $this->assertInstanceOf("\Doctrine\Common\Collections\ArrayCollection", $collection);
         $this->assertInstanceOf("\Webnoth\WML\Collection\TerrainTypes", $collection);

@@ -11,6 +11,7 @@ require_once dirname(__FILE__) . '/vendor/autoload.php';
 use Symfony\Component\Console\Application;
 
 define ('APPLICATION_PATH', __DIR__);
+define ('CACHE_PATH', __DIR__ . '/public/cache');
 
 $application = new Application();
 $application->add(new Webnoth\Console\Command\ParseTerrain());

@@ -19,7 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class ParseTerrain extends Command
+class ParseTerrain extends WebnothCommand
 {
     const FILE = 'file';
     const DESTINATION_ARG = 'dest';
@@ -61,7 +61,7 @@ class ParseTerrain extends Command
             $collection->set($terrain->getString(), $terrain);
         }
         
-        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        $cache = $this->getCache();
         $cache->save('terrain', $collection);
         
         //$destination = $input->getArgument(self::DESTINATION_ARG);

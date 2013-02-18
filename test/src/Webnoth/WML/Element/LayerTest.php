@@ -171,7 +171,7 @@ class LayerTest extends \PHPUnit_Framework_TestCase
      */
     protected function getCache()
     {
-        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        $cache = new \Doctrine\Common\Cache\FilesystemCache(CACHE_PATH);
         return $cache;
     }
 }

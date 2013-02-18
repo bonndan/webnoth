@@ -7,7 +7,6 @@
  */
 namespace Webnoth\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,11 +18,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class ParseMap extends Command
+class ParseMap extends WebnothCommand
 {
     const FILE = 'file';
     const DESTINATION_ARG = 'dest';
     
+    /**
+     * Configures the command (requires a "file" argument)
+     * 
+     * 
+     */
     protected function configure()
     {
         $this
@@ -51,7 +55,7 @@ class ParseMap extends Command
         $parser = new \Webnoth\WML\MapParser(new \Webnoth\WML\Lexer());
         $result = $parser->parse(file_get_contents($file));
         
-        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        $cache = $this->getCache();
         $cache->setNamespace('map');
         
         $filename = basename($file, '.map');

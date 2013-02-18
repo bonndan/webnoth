@@ -7,7 +7,6 @@
  */
 namespace Webnoth\Console\Command;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -19,7 +18,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @author Daniel Pozzi <bonndan76@googlemail.com>
  * @package Webnoth
  */
-class RenderMap extends Command
+class RenderMap extends WebnothCommand
 {
     /**
      * map argument (file name without suffix, must be cached)
@@ -61,7 +60,7 @@ class RenderMap extends Command
     {
         $mapName      = $input->getArgument(self::MAP);
         $cache        = $this->getCache();
-        $terrainTypes = $cache->fetch('terrain');
+        $terrainTypes = $this->getTerrainTypes();
         $map          = $this->getMap($mapName);
         $factory      = new \Webnoth\Renderer\Resource\Factory(APPLICATION_PATH . '/data/terrain');
         $renderer     = new \Webnoth\Renderer\Terrain($terrainTypes, $factory);
@@ -80,7 +79,7 @@ class RenderMap extends Command
         $image    = $renderer->render($map->getLayer('terrains'));
         $dest     = $input->getArgument(self::DESTINATION_ARG);
         if ($dest == null) {
-            $dest = APPLICATION_PATH . '/cache/' . $mapName . '.png';
+            $dest = $cache->getDirectory() . DIRECTORY_SEPARATOR . $mapName . '.png';
         }
         $output->writeln('Render the map ' . $mapName . ' to ' . $dest);
         imagepng($image->getImage(), $dest);
@@ -91,7 +90,7 @@ class RenderMap extends Command
         $renderer = new \Webnoth\Renderer\Overlay($terrainTypes, $factory);
         $renderer->addPlugin(new \Webnoth\Renderer\Plugin\SpecialTerrain($factory));
         $image    = $renderer->render($map->getLayer('overlays'));
-        $dest = APPLICATION_PATH . '/cache/' . $mapName . '.overlays.png';
+        $dest     = $cache->getDirectory() . DIRECTORY_SEPARATOR . $mapName . '.overlays.png';
         $output->writeln('Render the overlay map ' . $mapName . ' to ' . $dest);
         imagepng($image->getImage(), $dest);
         
@@ -107,7 +106,7 @@ class RenderMap extends Command
         );
         $renderer->addPlugin($transitionPlugin);
         $image    = $renderer->render($map->getLayer('heights'));
-        $dest = APPLICATION_PATH . '/cache/' . $mapName . '.heightmap.png';
+        $dest = $cache->getDirectory() . DIRECTORY_SEPARATOR . $mapName . '.heightmap.png';
         $output->writeln('Render the heightmap ' . $mapName . ' to ' . $dest);
         imagepng($image->getImage(), $dest);
     }
@@ -133,13 +132,21 @@ class RenderMap extends Command
     }
     
     /**
-     * creates a cache instance
+     * Returns the parsed terrain types from the cache.
      * 
-     * @return \Doctrine\Common\Cache\FilesystemCache
+     * @return TerrainTypes
+     * @throws \RuntimeException
      */
-    protected function getCache()
+    protected function getTerrainTypes()
     {
-        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
-        return $cache;
+        $cache        = $this->getCache();
+        $cache->setNamespace('');
+        $terrainTypes = $cache->fetch('terrain');
+        
+        if ($terrainTypes === FALSE) {
+            throw new \RuntimeException('Could not fetch the terrain types.');
+        }
+        
+        return $terrainTypes;
     }
 }

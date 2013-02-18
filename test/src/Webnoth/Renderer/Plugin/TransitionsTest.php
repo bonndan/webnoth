@@ -126,7 +126,7 @@ class TransitionsTest extends \PHPUnit_Framework_TestCase
      */
     protected function getTerrainCollection()
     {
-        $cache = new \Doctrine\Common\Cache\FilesystemCache(APPLICATION_PATH . '/cache');
+        $cache = new \Doctrine\Common\Cache\FilesystemCache(CACHE_PATH);
         return $cache->fetch('terrain');
     }
 }
