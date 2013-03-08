@@ -1,9 +1,10 @@
 # Webnoth
 
-Webnoth is an attempt to clone parts of "Battle for Wesnoth" in an web based
-environment. For now it renders maps to bitmaps. In the next step, these images
-will be used as texture an WebGL scenes and heightmaps will be generated and applied
-automatically.
+Webnoth is an experiment to render "Battle for Wesnoth" map in a 3D web based
+environment.
+
+![webnoth_lightmap](https://github.com/bonndan/webnoth/raw/master/doc/webnoth_lightmap.png "Attempt with heightmap and lightmap")
+
 
 ## Installation
 
