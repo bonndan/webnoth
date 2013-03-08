@@ -97,7 +97,7 @@ class Base
             $plugin->setLayer($layer);
         }
         
-        $image = Factory::createForLayer($layer);
+        $resource = $this->createLayerImage($layer);
         $col = 0;
         $row = 0;
         foreach ($layer->getTiles() as $tile) {
@@ -106,10 +106,10 @@ class Base
             $yOffset = ($col%2) ? self::TILE_HEIGHT/2 : 0;
             
             $terrainImages = $this->getTerrainsForTile($tile, $col, $row);
-            foreach ($terrainImages as $resource) {
+            foreach ($terrainImages as $terrainResource) {
                 $x = ($col * (0.75 * self::TILE_WIDTH));
                 $y = ($row) * self::TILE_HEIGHT + $yOffset;
-                $image->add($resource, $x, $y);
+                $resource->add($terrainResource, $x, $y);
             }
             $col++;
             if ($col == $layer->getWidth()) {
@@ -118,7 +118,18 @@ class Base
             }
         }
         
-        return $image;
+        return $resource;
+    }
+    
+    /**
+     * Calls the resource factory to create an image for the layer.
+     * 
+     * @param \Webnoth\WML\Element\Layer $layer
+     * @return \Webnoth\Renderer\Resource
+     */
+    protected function createLayerImage(\Webnoth\WML\Element\Layer $layer)
+    {
+        return Factory::createForLayer($layer);
     }
     
     /**
